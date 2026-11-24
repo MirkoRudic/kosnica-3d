@@ -1,0 +1,1704 @@
+<!DOCTYPE html>
+<html lang="sr" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Košnica 3D</title>
+<style>
+/*BASE_CSS*/
+html, body { height: 100%; }
+body { display: grid; grid-template-rows: 56px 1fr 34px; overflow: hidden; }
+body > footer.sig-f { display: flex; justify-content: center; align-items: center; gap: 8px; font-size: 12px; color: var(--muted); border-top: 1px solid var(--border); background: var(--surface); }
+body > footer.sig-f svg { width: 15px; height: 15px; color: var(--accent); stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+svg.i { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+
+header { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; padding: 0 16px;
+  border-bottom: 1px solid var(--border); background: var(--surface); }
+.brand { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 17px; letter-spacing: .3px; }
+.brand svg { width: 26px; height: 26px; color: var(--accent); stroke-width: 2; }
+.tabs { display: flex; gap: 4px; background: var(--bg); padding: 4px; border-radius: 10px; border: 1px solid var(--border); }
+.tabs button { border: 0; background: transparent; display: flex; align-items: center; gap: 8px; padding: 6px 14px; color: var(--muted); }
+.tabs button.on { background: var(--surface); color: var(--text); box-shadow: 0 0 0 1px var(--border); }
+.tabs button:disabled { opacity: .45; cursor: default; }
+.right { display: flex; justify-content: flex-end; align-items: center; gap: 8px; }
+.iconbtn { width: 36px; height: 36px; padding: 0; display: grid; place-items: center; }
+
+main { display: grid; grid-template-columns: 300px 1fr; min-height: 0; }
+aside { border-right: 1px solid var(--border); background: var(--surface); padding: 16px; display: flex; flex-direction: column;
+  gap: 18px; overflow-y: auto; min-height: 0; }
+.sec { display: flex; flex-direction: column; gap: 8px; }
+.lbl { font-size: 11px; text-transform: uppercase; letter-spacing: .8px; color: var(--muted); display: flex; justify-content: space-between; }
+.lbl b { color: var(--text); font-weight: 600; text-transform: none; letter-spacing: 0; font-size: 12px; }
+.seg { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 4px; background: var(--bg); padding: 3px; border-radius: 8px; border: 1px solid var(--border); }
+.seg button { border: 0; background: transparent; padding: 6px 4px; color: var(--muted); font-size: 13px; }
+.seg button.on { background: var(--accent); color: var(--accent-text); }
+.chips { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+.chips button { padding: 8px 4px; font-size: 13px; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.chips button.on { border-color: var(--accent); color: var(--accent); }
+.chips svg.sh { width: 26px; height: 26px; fill: currentColor; stroke: none; }
+.pair { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.num { display: flex; align-items: center; gap: 6px; }
+.num input { width: 100%; min-width: 0; text-align: center; }
+.num span { color: var(--muted); font-size: 12px; }
+.sw { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; }
+.sw button { aspect-ratio: 1; padding: 0; border-radius: 50%; border: 2px solid transparent; box-shadow: inset 0 0 0 2px var(--surface); }
+.sw button.on { border-color: var(--accent); }
+input[type=range] { padding: 0; border: 0; box-sizing: border-box; -webkit-appearance: none; appearance: none; width: 100%; height: 4px; border-radius: 4px; background: var(--border); outline: none; margin: 8px 0; }
+input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 16px; height: 16px; border-radius: 50%; background: var(--accent); border: 3px solid var(--surface); box-shadow: 0 0 0 1px var(--accent); cursor: pointer; }
+input[type=range]::-moz-range-thumb { width: 12px; height: 12px; border-radius: 50%; background: var(--accent); border: 3px solid var(--surface); cursor: pointer; }
+#netbox { display: none; position: absolute; right: 16px; bottom: 16px; width: 168px; padding: 8px; gap: 6px; flex-direction: column; z-index: 2;
+  background: var(--surface); border: 1px solid var(--border); border-radius: 10px; pointer-events: none; }
+#netbox.on { display: flex; }
+#presek { display: none; position: absolute; right: 16px; bottom: 16px; width: 200px; padding: 8px; gap: 6px; flex-direction: column; z-index: 2;
+  background: var(--surface); border: 1px solid var(--border); border-radius: 10px; pointer-events: none; }
+#presek.on { display: flex; }
+#planbox { display: none; position: absolute; right: 16px; bottom: 16px; width: 220px; padding: 10px; gap: 8px; flex-direction: column; z-index: 2;
+  background: var(--surface); border: 1px solid var(--border); border-radius: 10px; pointer-events: none; font-size: 12px; }
+#planbox.on { display: flex; }
+#planbox .pr { display: grid; grid-template-columns: 16px 1fr auto; gap: 8px; align-items: center; }
+#planbox .pc2 { color: var(--muted); text-align: center; font-size: 11px; }
+.sw1 { width: 16px; height: 16px; border-radius: 50%; border: 1px solid var(--border); display: inline-block; }
+.lrows { display: flex; flex-direction: column; gap: 6px; }
+.lrow { display: grid; grid-template-columns: 16px 1fr 58px 28px 28px; gap: 6px; align-items: center; font-size: 12px; }
+.lrow input { width: 100%; padding: 4px 6px; text-align: center; }
+.lrow .iconbtn { width: 28px; height: 28px; }
+.lrow .iconbtn svg { width: 14px; height: 14px; }
+.lprev { width: 100%; height: 120px; object-fit: contain; display: block; border-radius: 8px; border: 1px solid var(--border);
+  background: repeating-conic-gradient(var(--bg) 0 25%, var(--surface) 0 50%) 0 0 / 14px 14px; }
+.lname { text-align: center; color: var(--muted); font-size: 12px; }
+#presek svg { width: 100%; height: auto; display: block; }
+#net { width: 100%; aspect-ratio: 1; background: var(--bg); border-radius: 6px; display: block; }
+.grow { flex: 1; }
+button.wide { width: 100%; display: flex; justify-content: center; align-items: center; gap: 8px; padding: 10px; font-weight: 600; }
+
+#stage { display: grid; grid-template-rows: 1fr 52px; min-height: 0; min-width: 0; }
+#views { display: grid; grid-template-columns: 1fr; min-height: 0; }
+#views.split { grid-template-columns: 1fr 1fr; }
+#plan { display: none; min-height: 0; min-width: 0; padding: 16px; border-right: 1px solid var(--border); }
+#views.split #plan { display: grid; place-items: center; }
+#plan svg { width: 100%; height: 100%; }
+#plan polygon { cursor: pointer; }
+#v3d { position: relative; min-height: 0; min-width: 0; touch-action: none; cursor: grab; }
+#v3d > canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+#bar { border-top: 1px solid var(--border); background: var(--surface); display: grid; grid-template-columns: 1fr auto; align-items: center; padding: 0 16px; gap: 16px; }
+#stats { display: flex; gap: 8px; align-items: center; overflow: hidden; white-space: nowrap; }
+.st { background: var(--bg); border: 1px solid var(--border); border-radius: 20px; padding: 4px 12px; font-size: 13px; }
+.st i { font-style: normal; color: var(--muted); margin-right: 6px; }
+.st.bad { border-color: var(--danger); color: var(--danger); }
+#sim { display: none; align-items: center; gap: 10px; width: 340px; }
+#sim.on { display: flex; }
+#sim .lbl { min-width: 92px; }
+
+/* Podešavanja (UI12) */
+.set-ov { position: fixed; inset: 0; background: var(--overlay); display: grid; place-items: center; z-index: 900; }
+.set-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; width: min(760px, calc(100vw - 32px));
+  height: min(620px, calc(100vh - 32px)); display: grid; grid-template-rows: 56px 1fr; overflow: hidden; }
+.set-head { display: grid; grid-template-columns: 36px 1fr 36px; align-items: center; padding: 0 12px; border-bottom: 1px solid var(--border); }
+.set-head h2 { margin: 0; font-size: 16px; text-align: center; }
+.set-body { display: grid; grid-template-columns: 180px 1fr; min-height: 0; }
+.set-nav { border-right: 1px solid var(--border); padding: 12px; display: flex; flex-direction: column; gap: 4px; }
+.set-nav button { border: 0; background: transparent; text-align: left; color: var(--muted); }
+.set-nav button.on { background: var(--bg); color: var(--text); }
+.set-pane { padding: 16px; display: flex; flex-direction: column; gap: 16px; min-height: 0; overflow: hidden; }
+.set-row { display: grid; grid-template-columns: 1fr 220px; align-items: center; gap: 12px; }
+.logbox { flex: 1; min-height: 0; overflow-y: auto; background: var(--bg); border: 1px solid var(--border); border-radius: 8px;
+  padding: 10px 12px; font: 12px/1.55 ui-monospace, Consolas, monospace; white-space: pre-wrap; word-break: break-word; }
+.logbox .e { color: var(--danger); }
+.logbox .w { color: var(--accent); }
+.days { display: flex; gap: 6px; flex-wrap: wrap; }
+.days button { padding: 4px 10px; font-size: 12px; }
+.days button.on { border-color: var(--accent); color: var(--accent); }
+.muted { color: var(--muted); font-size: 13px; }
+
+.plist { display: flex; flex-direction: column; gap: 6px; }
+.pt { display: grid; grid-template-columns: 1fr 36px; gap: 6px; }
+.pt-main { display: grid; grid-template-columns: 28px 1fr auto; align-items: center; gap: 10px; text-align: left; padding: 6px 10px; min-width: 0; }
+.pt.on .pt-main { border-color: var(--accent); }
+.pt-main b { width: 28px; height: 28px; border-radius: 6px; background: var(--accent); color: var(--accent-text); display: grid; place-items: center; }
+.pt-main span { display: flex; flex-direction: column; font-size: 12px; color: var(--muted); min-width: 0; }
+.pt-main span strong { color: var(--text); font-weight: 600; font-size: 13px; }
+.pt-main em { font-style: normal; font-weight: 600; }
+.pt .dl { height: auto; width: 36px; }
+details.adv { border: 1px solid var(--border); border-radius: 10px; background: var(--bg); }
+details.adv summary { list-style: none; cursor: pointer; display: flex; justify-content: space-between; align-items: center; padding: 10px 12px; font-weight: 600; }
+details.adv summary::-webkit-details-marker { display: none; }
+details.adv[open] summary svg { transform: rotate(180deg); }
+details.adv .advin { padding: 0 12px 12px; display: flex; flex-direction: column; gap: 14px; }
+details.adv .seg { background: var(--surface); }
+svg.sh-i { width: 26px; height: 26px; }
+.chips + .sec { margin-top: 10px; }
+.ptypes { display: flex; flex-direction: column; gap: 6px; }
+.ptypes button { display: grid; grid-template-columns: 28px 1fr auto; align-items: center; gap: 10px; text-align: left; padding: 6px 10px; }
+.ptypes button.on { border-color: var(--accent); }
+.ptypes b { width: 28px; height: 28px; border-radius: 6px; background: var(--accent); color: var(--accent-text); display: grid; place-items: center; }
+.ptypes span { font-size: 12px; color: var(--muted); }
+.ptypes em { font-style: normal; font-weight: 600; }
+.chips.els { grid-template-columns: repeat(3, 1fr); }
+.chips.els button { font-size: 12px; min-height: 44px; line-height: 1.2; justify-content: center; }
+.chips.edges { grid-template-columns: repeat(4, 1fr); }
+#printcard .pc { width: 100%; border-collapse: collapse; font-size: 13px; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+.pc td, .pc th { padding: 5px 8px; white-space: nowrap; border-bottom: 1px solid var(--border); }
+.pc tr:last-child td { border-bottom: 0; }
+.pc td:first-child { color: var(--muted); }
+.pc td:not(:first-child), .pc th { text-align: right; }
+.pc th { font-weight: 600; font-size: 12px; }
+.sec .seg + .sw { margin-top: 4px; }
+
+@media (max-width: 820px) {
+  body { grid-template-rows: auto 1fr auto; overflow: auto; height: auto; }
+  body > footer.sig-f { padding: 10px 0 calc(10px + env(safe-area-inset-bottom)); }
+  header { grid-template-columns: 1fr auto; row-gap: 8px; padding: 8px 12px; }
+  header .tabs { grid-column: 1 / -1; grid-row: 2; justify-self: center; }
+  main { grid-template-columns: 1fr; }
+  aside { border-right: 0; border-bottom: 1px solid var(--border); }
+  #stage { height: 80vh; }
+  #views.split { grid-template-columns: 1fr; grid-template-rows: 1fr 1fr; }
+  #sim { width: 200px; }
+}
+</style>
+</head>
+<body>
+<!--ICONS-->
+
+<header>
+  <div class="brand"><svg class="i"><use href="#t-hexagons"/></svg>Košnica 3D</div>
+  <nav class="tabs">
+    <button data-mode="hsw" class="on"><svg class="i"><use href="#t-hexagon"/></svg>HSW</button>
+    <button data-mode="orn"><svg class="i"><use href="#t-christmas-ball"/></svg>Ornament</button>
+    <button data-mode="box"><svg class="i"><use href="#t-box"/></svg>Kutija</button>
+    <button data-mode="logo"><svg class="i"><use href="#t-badge"/></svg>Logo</button>
+    <button disabled><svg class="i"><use href="#t-plus"/></svg>Projekat</button>
+  </nav>
+  <div class="right">
+    <div class="seg" id="printer"><button data-v="k1" class="on">K1 Max</button><button data-v="k2">K2 Plus</button></div>
+    <button class="iconbtn" id="settings"><svg class="i"><use href="#t-settings"/></svg></button>
+  </div>
+</header>
+
+<main>
+  <aside id="side"></aside>
+  <input type="file" id="svgIn" accept=".svg,image/svg+xml" hidden>
+  <input type="file" id="logoFile" accept="image/png,image/jpeg,image/webp,image/svg+xml,.svg" hidden>
+  <section id="stage">
+    <div id="views"><div id="plan"></div><div id="v3d"><div id="netbox"><div class="lbl">Mreža za štampu</div><canvas id="net" width="512" height="512"></canvas></div><div id="planbox"><div class="lbl">Plan boja</div><div class="plan"></div></div><div id="presek" class="ovbox"><div class="lbl">Presek spoja</div><svg></svg></div></div></div>
+    <div id="bar">
+      <div id="stats"></div>
+      <div id="sim">
+        <button class="iconbtn" id="play"><svg class="i"><use href="#t-player-play"/></svg></button>
+        <input type="range" id="simT" min="0" max="1000" value="1000">
+        <div class="lbl"><b id="simLbl">Spojeno</b></div>
+      </div>
+    </div>
+  </section>
+</main>
+<footer class="sig-f"><svg><use href="#t-heart-bolt"/></svg>Napravljeno u Zajedničkoj zanatskoj radionici Ožiljak<svg><use href="#t-heart-bolt"/></svg></footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+/*DIALOG_JS*/
+</script>
+<script>
+"use strict";
+const APP = "kosnica3d", VERSION = "0.7.1";
+// ---------- Dnevnik (L1, L3-L6): one entry per day, readable text lines; in the browser it lives in localStorage ----------
+const store = (() => { const mem = {}; return {
+  get: (k) => { try { return localStorage.getItem(k); } catch { return mem[k] ?? null; } },
+  set: (k, v) => { try { localStorage.setItem(k, v); } catch { mem[k] = v; } },
+  del: (k) => { try { localStorage.removeItem(k); } catch { delete mem[k]; } },
+  keys: () => { try { return Object.keys(localStorage); } catch { return Object.keys(mem); } },
+}; })();
+const isoDay = (d = new Date()) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+const fmtDay = (iso) => { const [y, m, d] = iso.split("-"); return `${d}.${m}.${y}`; };
+const LOG_PREFIX = `${APP}_log_`, LOG_CAP = 500 * 1024 * 1024;
+const log = (level, msg, err) => {
+  try {
+    const d = new Date(), t = `${isoDay(d)} ${d.toTimeString().slice(0, 8)}`;
+    let line = `${t} ${level.padEnd(5)} ${msg}\n`;
+    if (err && err.stack) line += err.stack.split("\n").map((l) => "    " + l).join("\n") + "\n";
+    const k = LOG_PREFIX + isoDay(d); store.set(k, (store.get(k) || "") + line);
+  } catch { /* L3: logging never breaks the work */ }
+};
+const logDays = () => store.keys().filter((k) => k.startsWith(LOG_PREFIX)).map((k) => k.slice(LOG_PREFIX.length)).sort().reverse();
+const logSize = () => logDays().reduce((a, d) => a + (store.get(LOG_PREFIX + d) || "").length, 0);
+window.addEventListener("error", (e) => log("ERROR", `Neuhvaćena greška: ${e.message}`, e.error));
+window.addEventListener("unhandledrejection", (e) => log("ERROR", "Neuhvaćeno odbijanje", e.reason));
+log("INFO", `start ${APP} ${VERSION}`);
+try { const th = store.get(APP + "_theme"); if (th) document.documentElement.dataset.theme = th; } catch {}
+// ---------- formatting (T2/T3) ----------
+const fmtNum = (n, d = 0) => n.toLocaleString("sr-RS", { minimumFractionDigits: d, maximumFractionDigits: d });
+const fmtDur = (min) => min < 60 ? `${fmtNum(min)} min` : `${fmtNum(Math.floor(min / 60))} h ${fmtNum(Math.round(min % 60))} min`;
+const $ = (s) => document.querySelector(s);
+const clamp = (v, a = 0, b = 1) => Math.max(a, Math.min(b, v));
+
+// ---------- data ----------
+const PRINTERS = { k1: { name: "K1 Max", bed: 300 }, k2: { name: "K2 Plus", bed: 350 } };
+const COLORS = {
+  zlatna: { hex: "#d4a63a", metal: .55, rough: .3 }, crvena: { hex: "#b8202a", metal: .2, rough: .3 },
+  bela: { hex: "#efefea", metal: 0, rough: .45 }, srebrna: { hex: "#c3c8cf", metal: .7, rough: .25 },
+  zelena: { hex: "#2f7d4a", metal: .15, rough: .35 }, crna: { hex: "#2a2b2e", metal: .1, rough: .5 },
+};
+// HSW standard (needs a calibration print): hole 20 mm across flats, rib 3,6 mm, pitch 23,6 mm, depth 8 mm
+const P = 23.6, RO = P / Math.sqrt(3), RI = 20 / Math.sqrt(3), T = 8, ROWH = 1.5 * RO;
+const G_PER_CELL = 1.15, G_PER_H = 25;
+
+const S = {
+  mode: "hsw", printer: "k1", color: "zlatna",
+  mat: "pla",
+  hsw: { sub: "projekat", w: 120, h: 80, border: true, tool: "panel", view: "panel", sel: 0, pcol: 8, prow: 9,
+    edges: { t: false, b: true, l: false, r: false }, removed: { projekat: new Set(), panel: new Set() }, el: "kuka", dims: {} },
+  adv: false,
+  logo: { colors: 2, base: 3, t: {}, width: 60, rim: 2, smooth: 1, extra: "magnet", mag: 10, magd: 2, order: [] },
+  box: { w: 90, d: 60, h: 45, wall: 2, floor: 2, gap: .3, snap: 1, divX: 0, divY: 0, lid: "sarke", grip: "jezicak", view: "otvoreno" },
+  pat: { kind: "bez", cell: 9, rib: 1.6, frame: 5, open: false, surf: { zidovi: true, dno: false, poklopac: true, pregrade: false } },
+  orn: { shape: "zvezda", arms: 6, pattern: "pletivo", radial: true, size: 100, cell: 6, rib: 1.1, rim: 1.6, bulge: 70, hang: "sraf", view: "ornament", t: 1, press: true },
+};
+
+// ---------- three.js scene ----------
+const host = $("#v3d");
+const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+renderer.setPixelRatio(Math.min(2, devicePixelRatio));
+renderer.outputEncoding = THREE.sRGBEncoding;
+renderer.localClippingEnabled = true;
+host.appendChild(renderer.domElement);
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(35, 1, 1, 20000);
+scene.add(new THREE.HemisphereLight(0xffffff, 0x444444, .75));
+const key = new THREE.DirectionalLight(0xffffff, .9); key.position.set(1, 1.4, 2); scene.add(key);
+const rim = new THREE.DirectionalLight(0xffffff, .45); rim.position.set(-2, -.5, -1.5); scene.add(rim);
+let root = new THREE.Group(); scene.add(root);
+const orbit = { theta: .45, phi: .3, dist: 400, target: new THREE.Vector3() };
+function placeCam() {
+  const { theta, phi, dist, target } = orbit;
+  camera.position.set(target.x + dist * Math.cos(phi) * Math.sin(theta), target.y + dist * Math.sin(phi), target.z + dist * Math.cos(phi) * Math.cos(theta));
+  camera.lookAt(target);
+}
+function frame(size, theta = .45, phi = .3) { const asp = host.clientWidth / Math.max(1, host.clientHeight) || camera.aspect; orbit.dist = size / 2 / Math.tan(camera.fov * Math.PI / 360) / Math.min(1, asp) * 1.3; orbit.theta = theta; orbit.phi = phi; orbit.target.set(0, 0, 0); }
+(function bindOrbit() {
+  let drag = null;
+  host.addEventListener("pointerdown", (e) => { drag = { x: e.clientX, y: e.clientY }; host.setPointerCapture(e.pointerId); host.style.cursor = "grabbing"; });
+  host.addEventListener("pointermove", (e) => {
+    if (!drag) return;
+    orbit.theta -= (e.clientX - drag.x) * .008; orbit.phi = clamp(orbit.phi + (e.clientY - drag.y) * .008, -1.45, 1.45);
+    drag = { x: e.clientX, y: e.clientY };
+  });
+  const up = () => { drag = null; host.style.cursor = "grab"; };
+  host.addEventListener("pointerup", up); host.addEventListener("pointercancel", up);
+  host.addEventListener("wheel", (e) => { e.preventDefault(); orbit.dist *= Math.exp(e.deltaY * .001); }, { passive: false });
+})();
+new ResizeObserver(() => {
+  const w = host.clientWidth, h = host.clientHeight; if (!w || !h) return;
+  renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix();
+}).observe(host);
+function clearRoot() {
+  root.traverse((o) => { if (o.geometry) o.geometry.dispose(); });
+  scene.remove(root); root = new THREE.Group(); scene.add(root);
+}
+function filamentMat(extra = {}) {
+  const c = COLORS[S.color];
+  return new THREE.MeshStandardMaterial(Object.assign({ color: c.hex, metalness: c.metal, roughness: c.rough }, extra));
+}
+
+// ---------- HSW geometry ----------
+function hexPts(r, n = 6, rot = Math.PI / 2) { const a = []; for (let i = 0; i < n; i++) { const t = rot + i * Math.PI * 2 / n; a.push([r * Math.cos(t), r * Math.sin(t)]); } return a; }
+function hexShape(rOut, rIn) {
+  const s = new THREE.Shape(hexPts(rOut).map(([x, y]) => new THREE.Vector2(x, y)));
+  if (rIn) s.holes.push(new THREE.Path(hexPts(rIn).reverse().map(([x, y]) => new THREE.Vector2(x, y))));
+  return s;
+}
+const ringGeo = new THREE.ExtrudeGeometry(hexShape(RO, RI), { depth: T, bevelEnabled: false });
+const FR = 3.6; // straight edge strip width = one rib
+const INF = 1e9;
+const bedMax = () => { const bed = PRINTERS[S.printer].bed - 10; return { pc: Math.max(1, Math.floor((bed - P / 2) / P)), pr: Math.max(1, Math.floor((bed - 2 * RO) / ROWH) + 1) }; };
+
+// A panel = cells (centers in plan coords, y down) + optional clip rect + straight-edge sides.
+function bbox(p) {
+  const on = p.cells.filter((c) => !c.off), xs = on.map((c) => c.x), ys = on.map((c) => c.y);
+  if (!on.length) return { x0: 0, x1: 0, y0: 0, y1: 0 };
+  return { x0: Math.max(p.clip.x0, Math.min(...xs) - P / 2), x1: Math.min(p.clip.x1, Math.max(...xs) + P / 2),
+    y0: Math.max(p.clip.y0, Math.min(...ys) - RO), y1: Math.min(p.clip.y1, Math.max(...ys) + RO) };
+}
+// share of a cell left after clipping (for the filament estimate)
+function cellShare(c, clip) {
+  const w = Math.max(0, Math.min(clip.x1, c.x + P / 2) - Math.max(clip.x0, c.x - P / 2)) / P;
+  const h = Math.max(0, Math.min(clip.y1, c.y + RO) - Math.max(clip.y0, c.y - RO)) / (2 * RO);
+  return w * h;
+}
+
+function projectLayout() {
+  const h = S.hsw, W = h.w * 10, H = h.h * 10, cells = [], rm = h.removed.projekat;
+  if (!h.border) {
+    const cols = Math.max(1, Math.floor((W - P / 2) / P)), rows = Math.max(1, Math.floor((H - 2 * RO) / ROWH) + 1);
+    for (let r = 0; r < rows; r++) for (let c = 0; c < cols; c++) cells.push({ r, c, x: P / 2 + c * P + (r % 2) * P / 2, y: RO + r * ROWH });
+  } else {
+    const rows = Math.ceil((H + RO) / ROWH) + 1, cols = Math.ceil(W / P) + 2;
+    for (let r = 0; r < rows; r++) for (let c = 0; c < cols; c++) {
+      const x = c * P + (r % 2) * P / 2, y = r * ROWH;
+      if (x - P / 2 < W && x + P / 2 > 0 && y - RO < H && y + RO > 0) cells.push({ r, c, x, y });
+    }
+  }
+  const R = Math.max(...cells.map((c) => c.r)) + 1, C = Math.max(...cells.map((c) => c.c)) + 1, mx = bedMax();
+  const nx = Math.ceil(C / mx.pc), ny = Math.ceil(R / mx.pr), pc = Math.ceil(C / nx), pr = Math.ceil(R / ny);
+  const clip = h.border ? { x0: 0, x1: W, y0: 0, y1: H } : { x0: -INF, x1: INF, y0: -INF, y1: INF };
+  const panels = [];
+  for (let py = 0; py < ny; py++) for (let px = 0; px < nx; px++)
+    panels.push({ id: panels.length, px, py, cells: [], clip, frame: h.border ? { l: px === 0, r: px === nx - 1, t: py === 0, b: py === ny - 1 } : {} });
+  for (const c of cells) {
+    c.off = rm.has(c.r + "," + c.c);
+    panels[Math.floor(c.r / pr) * nx + Math.floor(c.c / pc)].cells.push(c);
+  }
+  return finishLayout({ W, H, nx, ny, panels: panels.filter((p) => p.cells.length) });
+}
+function panelLayout() {
+  const h = S.hsw, mx = bedMax(); h.pcol = clamp(h.pcol, 1, mx.pc); h.prow = clamp(h.prow, 1, mx.pr);
+  const cells = [], e = h.edges, rm = h.removed.panel;
+  for (let r = 0; r < h.prow; r++) for (let c = 0; c < h.pcol; c++) cells.push({ r, c, x: P / 2 + c * P + (r % 2) * P / 2, y: RO + r * ROWH, off: rm.has(r + "," + c) });
+  const clip = { x0: e.l ? P / 2 : -INF, x1: e.r ? h.pcol * P : INF, y0: e.t ? RO / 2 : -INF, y1: e.b ? RO + (h.prow - 1) * ROWH + RO / 2 : INF };
+  const p = { id: 0, px: 0, py: 0, cells, clip, frame: { ...e } }, bb = bbox(p);
+  return finishLayout({ W: bb.x1, H: bb.y1, x0: bb.x0, y0: bb.y0, nx: 1, ny: 1, panels: [p] });
+}
+function finishLayout(L) {
+  // group identical panels -> print list (A × 6, B × 2 ...)
+  const groups = new Map();
+  L.panels.forEach((p) => {
+    p.id = L.panels.indexOf(p); p.bb = bbox(p);
+    const k = p.cells.filter((c) => !c.off).map((c) => `${(c.x - p.bb.x0).toFixed(1)},${(c.y - p.bb.y0).toFixed(1)}`).sort().join(";") +
+      `|${(p.bb.x1 - p.bb.x0).toFixed(1)}x${(p.bb.y1 - p.bb.y0).toFixed(1)}|` + ["l", "r", "t", "b"].filter((s) => p.frame[s]).join("");
+    if (!groups.has(k)) groups.set(k, []); groups.get(k).push(p);
+  });
+  L.types = [...groups.values()].sort((a, b) => b.length - a.length).map((list, i) => {
+    const letter = String.fromCharCode(65 + i); list.forEach((p) => (p.type = letter));
+    const p = list[0]; return { letter, count: list.length, first: p.id, cells: p.cells.filter((c) => !c.off).length, w: p.bb.x1 - p.bb.x0, h: p.bb.y1 - p.bb.y0 };
+  });
+  let g = 0;
+  for (const p of L.panels) {
+    for (const c of p.cells) if (!c.off) g += cellShare(c, p.clip) * G_PER_CELL;
+    for (const s of ["l", "r", "t", "b"]) if (p.frame[s]) g += ((s === "l" || s === "r") ? p.bb.y1 - p.bb.y0 : p.bb.x1 - p.bb.x0) * FR * T * 1.24 / 1000;
+  }
+  L.grams = g * MATS[S.mat].dens / 1.24;
+  L.cellCount = L.panels.reduce((a, p) => a + p.cells.filter((c) => !c.off).length, 0);
+  return L;
+}
+const curLayout = () => S.hsw.sub === "panel" ? panelLayout() : projectLayout();
+
+function renderPlan() {
+  const L = curLayout(), m = 24, sub = S.hsw.sub, parts = [];
+  const vx = L.x0 ?? 0, vy = L.y0 ?? 0, vw = L.W - vx, vh = L.H - vy;
+  const border = sub === "projekat" ? S.hsw.border : true;
+  const ptsStr = (cx, cy) => hexPts(RO * .93).map(([x, y]) => `${(cx + x).toFixed(1)},${(cy + y).toFixed(1)}`).join(" ");
+  if (sub === "projekat") parts.push(`<rect x="0" y="0" width="${L.W}" height="${L.H}" fill="none" stroke="var(--muted)" stroke-dasharray="8 6" stroke-width="2"/>`);
+  const clipDefs = [];
+  L.panels.forEach((p) => {
+    const sel = sub === "panel" || p.id === S.hsw.sel, alt = (p.px + p.py) % 2;
+    const cid = `cl${p.id}`, c = p.clip;
+    clipDefs.push(`<clipPath id="${cid}"><rect x="${Math.max(c.x0, -1e5)}" y="${Math.max(c.y0, -1e5)}" width="${Math.min(c.x1, 1e5) - Math.max(c.x0, -1e5)}" height="${Math.min(c.y1, 1e5) - Math.max(c.y0, -1e5)}"/></clipPath>`);
+    parts.push(`<g clip-path="url(#${cid})">`);
+    p.cells.forEach((cell, i) => {
+      const fill = cell.off ? "none" : sel ? "var(--accent)" : alt ? "var(--border)" : "var(--muted)";
+      parts.push(`<polygon data-p="${p.id}" data-i="${i}" points="${ptsStr(cell.x, cell.y)}" fill="${fill}" fill-opacity="${cell.off ? 1 : sel ? .95 : .55}" stroke="${cell.off ? "var(--danger)" : "none"}" stroke-dasharray="${cell.off ? "4 3" : ""}" stroke-width="1.5"/>`);
+    });
+    parts.push("</g>");
+    const b = p.bb, col = sel ? "var(--accent)" : "var(--text)";
+    if (p.frame.l) parts.push(`<rect x="${b.x0}" y="${b.y0}" width="${FR}" height="${b.y1 - b.y0}" fill="${col}"/>`);
+    if (p.frame.r) parts.push(`<rect x="${b.x1 - FR}" y="${b.y0}" width="${FR}" height="${b.y1 - b.y0}" fill="${col}"/>`);
+    if (p.frame.t) parts.push(`<rect x="${b.x0}" y="${b.y0}" width="${b.x1 - b.x0}" height="${FR}" fill="${col}"/>`);
+    if (p.frame.b) parts.push(`<rect x="${b.x0}" y="${b.y1 - FR}" width="${b.x1 - b.x0}" height="${FR}" fill="${col}"/>`);
+    if (sub === "projekat") {
+      const fs = Math.min(b.x1 - b.x0, b.y1 - b.y0) * .32;
+      parts.push(`<text x="${(b.x0 + b.x1) / 2}" y="${(b.y0 + b.y1) / 2}" font-size="${fs}" font-weight="700" text-anchor="middle" dominant-baseline="central" fill="var(--bg)" fill-opacity=".85" pointer-events="none">${p.type}</text>`);
+    }
+  });
+  $("#plan").innerHTML = `<svg viewBox="${vx - m} ${vy - m} ${vw + 2 * m} ${vh + 2 * m}" preserveAspectRatio="xMidYMid meet"><defs>${clipDefs.join("")}</defs>${parts.join("")}</svg>`;
+}
+$("#plan").addEventListener("click", (e) => {
+  const poly = e.target.closest("polygon"); if (!poly) return;
+  const L = curLayout(), p = L.panels[+poly.dataset.p], cell = p.cells[+poly.dataset.i], sub = S.hsw.sub;
+  if (sub === "projekat" && S.hsw.tool === "panel") S.hsw.sel = p.id;
+  else { const set = S.hsw.removed[sub], k = cell.r + "," + cell.c; set.has(k) ? set.delete(k) : set.add(k); log("INFO", `izrez ${sub}: ćelija ${k}`); }
+  renderPlan(); buildHSW(false); stats();
+});
+
+function buildHSW(reframe = true) {
+  clearRoot();
+  const L = curLayout(), sub = S.hsw.sub, explode = sub === "projekat" && S.hsw.view === "zid", gap = explode ? 8 : 0;
+  const show = sub === "panel" || S.hsw.view === "zid" ? L.panels : L.panels.filter((p) => p.id === S.hsw.sel);
+  if (!show.length) return;
+  const ox = (p) => p.px * gap, oy = (p) => p.py * gap;
+  const X0 = Math.min(...show.map((p) => p.bb.x0 + ox(p))), X1 = Math.max(...show.map((p) => p.bb.x1 + ox(p)));
+  const Y0 = Math.min(...show.map((p) => p.bb.y0 + oy(p))), Y1 = Math.max(...show.map((p) => p.bb.y1 + oy(p)));
+  const cx = (X0 + X1) / 2, cy = (Y0 + Y1) / 2, base = new THREE.Color(COLORS[S.color].hex), m4 = new THREE.Matrix4();
+  for (const p of show) {
+    const tx = (x) => x + ox(p) - cx, ty = (y) => -(y + oy(p) - cy), c = p.clip, planes = [];
+    if (c.x0 > -INF) planes.push(new THREE.Plane(new THREE.Vector3(1, 0, 0), -tx(c.x0)));
+    if (c.x1 < INF) planes.push(new THREE.Plane(new THREE.Vector3(-1, 0, 0), tx(c.x1)));
+    if (c.y0 > -INF) planes.push(new THREE.Plane(new THREE.Vector3(0, -1, 0), ty(c.y0)));
+    if (c.y1 < INF) planes.push(new THREE.Plane(new THREE.Vector3(0, 1, 0), -ty(c.y1)));
+    const mat = filamentMat({ clippingPlanes: planes, side: THREE.DoubleSide });
+    if (explode && (p.px + p.py) % 2) mat.color.copy(base).multiplyScalar(.78);
+    const on = p.cells.filter((cc) => !cc.off);
+    const mesh = new THREE.InstancedMesh(ringGeo, mat, Math.max(1, on.length));
+    on.forEach((cc, i) => { m4.makeTranslation(tx(cc.x), ty(cc.y), -T / 2); mesh.setMatrixAt(i, m4); });
+    mesh.count = on.length; root.add(mesh);
+    const fm = filamentMat(); if (explode && (p.px + p.py) % 2) fm.color.copy(mat.color);
+    const b = p.bb, box = (x0, y0, x1, y1) => { const bx = new THREE.Mesh(new THREE.BoxGeometry(x1 - x0, y1 - y0, T), fm); bx.position.set(tx((x0 + x1) / 2), ty((y0 + y1) / 2), 0); root.add(bx); };
+    if (p.frame.l) box(b.x0, b.y0, b.x0 + FR, b.y1);
+    if (p.frame.r) box(b.x1 - FR, b.y0, b.x1, b.y1);
+    if (p.frame.t) box(b.x0, b.y0, b.x1, b.y0 + FR);
+    if (p.frame.b) box(b.x0, b.y1 - FR, b.x1, b.y1);
+  }
+  if (reframe) frame(Math.max(X1 - X0, Y1 - Y0), .35, .25);
+}
+
+// ---------- HSW elements ----------
+// dims: [key, label, min, max, default, unit]; parts: what gets printed
+const EL = {
+  kuka: { n: "Kuka", kind: "nosivi", dims: [["len", "Dužina", 30, 150, 70], ["tip", "Visina vrha", 0, 40, 16], ["th", "Debljina", 6, 14, 8]] },
+  dvokuka: { n: "Dvostruka kuka", kind: "nosivi", dims: [["len", "Dužina", 30, 150, 60], ["tip", "Visina vrha", 0, 40, 14], ["th", "Debljina", 6, 14, 8]] },
+  polica: { pat: true, n: "Polica", kind: "polica", dims: [["w", "Širina", 60, 240, 120], ["d", "Dubina", 40, 150, 70], ["lip", "Ograda", 0, 40, 10]] },
+  casa: { n: "Čaša", kind: "posuda", dims: [["dia", "Prečnik", 30, 100, 60], ["h", "Visina", 40, 160, 80]] },
+  fioka: { pat: true, n: "Fioka", kind: "posuda", parts: [["Okvir fioke", 1], ["Fioka", 1]], dims: [["w", "Širina", 60, 200, 110], ["h", "Visina", 30, 120, 50], ["d", "Dubina", 50, 160, 90]] },
+  kutija: { pat: true, n: "Kutija s poklopcem", kind: "posuda", parts: [["Kutija", 1], ["Poklopac", 1]], dims: [["w", "Širina", 40, 200, 90], ["h", "Visina", 30, 120, 55], ["d", "Dubina", 40, 120, 60]] },
+  odvijaci: { n: "Odvijači", kind: "polica", dims: [["w", "Širina", 60, 240, 140], ["d", "Dubina", 30, 80, 45], ["hole", "Rupa", 4, 16, 9]] },
+  kljucevi: { n: "Imbus ključevi", kind: "polica", dims: [["w", "Širina", 60, 200, 110], ["d", "Dubina", 20, 60, 30]] },
+  klesta: { n: "Klešta i makaze", kind: "polica", dims: [["w", "Širina", 60, 240, 130], ["d", "Dubina", 30, 80, 50], ["slot", "Prorez", 6, 24, 12]] },
+  kalem: { n: "Kalem filamenta", kind: "nosivi", dims: [["len", "Dužina", 60, 120, 85], ["dia", "Prečnik osovine", 20, 50, 40]] },
+  traka: { n: "Lepljiva traka", kind: "nosivi", dims: [["len", "Dužina", 30, 140, 70], ["dia", "Prečnik jezgra", 25, 76, 50]] },
+  kablovi: { n: "Namotač kablova", kind: "nosivi", dims: [["len", "Dužina", 30, 120, 60], ["tip", "Visina vrha", 0, 40, 20]] },
+  sprej: { pat: true, n: "Sprej i bočice", kind: "posuda", dims: [["dia", "Prečnik", 25, 80, 52], ["cnt", "Broj", 1, 4, 2, ""]] },
+  telefon: { pat: true, n: "Telefon i tablet", kind: "polica", dims: [["w", "Širina", 60, 260, 100], ["d", "Žleb", 8, 20, 12], ["lip", "Usna", 6, 30, 14]] },
+  lemilica: { n: "Lemilica", kind: "nosivi", dims: [["dia", "Prečnik", 10, 35, 22], ["len", "Dužina", 40, 120, 70]] },
+  gridfinity: { n: "Gridfinity polica", kind: "polica", dims: [["cols", "Kolone", 1, 6, 3, ""], ["rows", "Redovi", 1, 4, 2, ""]] },
+  etiketa: { n: "Nosač etikete", kind: "posuda", dims: [["w", "Širina", 30, 120, 60], ["h", "Visina", 12, 40, 20]] },
+  cep: { n: "Čep", kind: "posuda", dims: [["hole", "Rupa za kabl", 0, 12, 0]] },
+};
+const dimDef = (el, k) => EL[el].dims.find((x) => x[0] === k);
+const dimUnit = (el, k) => { const d = dimDef(el, k); return d[5] ?? "mm"; };
+const dimOf = (el, k) => { const d = S.hsw.dims[el] || (S.hsw.dims[el] = {}); if (d[k] == null) d[k] = dimDef(el, k)[4]; return d[k]; };
+const fmtDim = (el, k) => { const u = dimUnit(el, k); if (el === "cep" && !dimOf(el, k)) return "slepi"; return `${fmtNum(dimOf(el, k))}${u ? " " + u : ""}`; };
+
+function buildElement() {
+  clearRoot();
+  const el = S.hsw.el, D = (k) => dimOf(el, k);
+  const span = el === "sprej" ? D("cnt") * (D("dia") + 8) : el === "gridfinity" ? D("cols") * 42 : el === "polica" || EL[el].dims.some((d) => d[0] === "w") && el !== "kutija" ? D("w") : 0;
+  const rows = 3, cols = Math.max(4, Math.ceil(span / P) + 2), g = new THREE.Group(); root.add(g);
+  const cells = []; for (let r = 0; r < rows; r++) for (let c = 0; c < cols; c++) cells.push([P / 2 + c * P + (r % 2) * P / 2, RO + r * ROWH, r]);
+  const xs = cells.map((c) => c[0]), cx = (Math.min(...xs) + Math.max(...xs)) / 2, cy = RO + ROWH;
+  const wall = new THREE.InstancedMesh(ringGeo, new THREE.MeshStandardMaterial({ color: "#6b6e74", roughness: .7 }), cells.length), m = new THREE.Matrix4();
+  cells.forEach(([x, y], i) => { m.makeTranslation(x - cx, -(y - cy), 0); wall.setMatrixAt(i, m); });
+  g.add(wall);
+  const mat = filamentMat(), matD = filamentMat({ side: THREE.DoubleSide }), white = new THREE.MeshStandardMaterial({ color: "#f2f2ee", roughness: .6 });
+  const ins = new THREE.ExtrudeGeometry(hexShape(RI * .985, RI * .55), { depth: T + 3, bevelEnabled: false });
+  const rowOf = (r) => cells.filter((c) => c[2] === r).map(([x, y]) => new THREE.Vector3(x - cx, -(y - cy), 0));
+  const row1 = rowOf(1), mid = row1.reduce((a, v) => Math.abs(v.x) < Math.abs(a.x) ? v : a);
+  const nearest = (row, x) => row.reduce((a, v) => Math.abs(v.x - x) < Math.abs(a.x - x) ? v : a);
+  const addInsert = (v) => { const mm = new THREE.Mesh(ins, mat); mm.position.set(v.x, v.y, -.5); g.add(mm); };
+  const pair = (w) => { const a = row1.filter((v) => Math.abs(v.x) <= w / 2 - 12).sort((p, q) => p.x - q.x); const list = a.length > 1 ? [a[0], a[a.length - 1]] : [a[0] || mid]; list.forEach(addInsert); return list; };
+  const F = T + 2.5; // front face of the wall
+  const add = (geo, x, y, z, rx = 0, material = mat) => { const mm = new THREE.Mesh(geo, material); mm.position.set(x, y, z); mm.rotation.x = rx; g.add(mm); return mm; };
+  const box = (w, h, d, x, y, z, material) => {
+    if (!EL[el].pat || material) return add(new THREE.BoxGeometry(w, h, d), x, y, z, 0, material);
+    const m = patBox(w, h, d, true, filamentMat({ side: THREE.DoubleSide })); m.position.set(x, y, z); g.add(m); return m;
+  };
+  const back = (w, h, y) => box(w, h, 4, 0, y, F + 2);
+  // plate lying flat (x = width, z = depth from the wall), top face at y; holes are [x, z, r] circles or [x, z, w, d] slots
+  const plate = (w, d, th, y, holes = []) => {
+    const s = new THREE.Shape([new THREE.Vector2(-w / 2, 0), new THREE.Vector2(w / 2, 0), new THREE.Vector2(w / 2, d), new THREE.Vector2(-w / 2, d)]);
+    holes.forEach((h) => { const p = new THREE.Path(); if (h.length === 3) p.absarc(h[0], h[1], h[2], 0, Math.PI * 2, true); else p.moveTo(h[0] - h[2] / 2, h[1] - h[3] / 2), p.lineTo(h[0] - h[2] / 2, h[1] + h[3] / 2), p.lineTo(h[0] + h[2] / 2, h[1] + h[3] / 2), p.lineTo(h[0] + h[2] / 2, h[1] - h[3] / 2); s.holes.push(p); });
+    return add(new THREE.ExtrudeGeometry(s, { depth: th, bevelEnabled: false, curveSegments: 24 }), 0, y, F, Math.PI / 2);
+  };
+  const hook = (v, L, tip, r, up = 1) => {
+    add(new THREE.CylinderGeometry(r, r, L, 32), v.x, v.y, F + L / 2, Math.PI / 2);
+    add(new THREE.SphereGeometry(r, 24, 16), v.x, v.y, F + L);
+    if (tip > 0) { add(new THREE.CylinderGeometry(r, r, tip, 32), v.x, v.y + up * tip / 2, F + L); add(new THREE.SphereGeometry(r, 24, 16), v.x, v.y + up * tip, F + L); }
+  };
+  const openBox = (w, h, d, x, y, z, t = 2.4, material = mat) => { // no top; y = bottom
+    box(w, t, d, x, y + t / 2, z + d / 2, material); box(w, h, t, x, y + h / 2, z + t / 2, material); box(w, h, t, x, y + h / 2, z + d - t / 2, material);
+    box(t, h, d, x - w / 2 + t / 2, y + h / 2, z + d / 2, material); box(t, h, d, x + w / 2 - t / 2, y + h / 2, z + d / 2, material);
+  };
+  const y = mid.y;
+
+  if (el === "kuka") { addInsert(mid); hook(mid, D("len"), D("tip"), D("th") / 2); }
+  if (el === "dvokuka") { const a = nearest(row1, -P), b = nearest(row1, P); [a, b].forEach((v) => { addInsert(v); hook(v, D("len"), D("tip"), D("th") / 2); }); box(b.x - a.x + 10, 12, 4, (a.x + b.x) / 2, y, F + 2); }
+  if (el === "polica") {
+    const w = D("w"), d = D("d"), lip = D("lip"); pair(w);
+    back(w, 34, y - 4); box(w, 4, d, 0, y - 19, F + d / 2);
+    if (lip > 0) box(w, lip, 3, 0, y - 21 + lip / 2, F + d - 1.5);
+  }
+  if (el === "casa") {
+    const R = D("dia") / 2, h = D("h"); addInsert(mid);
+    box(14, 40, 6, mid.x, y - 12, F + 3);
+    add(new THREE.CylinderGeometry(R, R, h, 48, 1, true), mid.x, y + 20 - h / 2, F + 6 + R, 0, matD);
+    add(new THREE.CylinderGeometry(R, R, 3, 48), mid.x, y + 20 - h + 1.5, F + 6 + R);
+  }
+  if (el === "fioka") {
+    const w = D("w"), h = D("h"), d = D("d"), t = 2.4, top = y + 6; pair(w); back(w, h + 2 * t, top - (h + 2 * t) / 2);
+    box(w, t, d, 0, top - t / 2, F + d / 2); box(w, t, d, 0, top - h - 1.5 * t, F + d / 2);
+    box(t, h + 2 * t, d, -w / 2 + t / 2, top - (h + 2 * t) / 2, F + d / 2); box(t, h + 2 * t, d, w / 2 - t / 2, top - (h + 2 * t) / 2, F + d / 2);
+    const dz = F + 4 + d * .35, dw = w - 2 * t - 1, dh = h - 2, dd = d - 4;
+    openBox(dw, dh, dd, 0, top - t - h, dz, 2);
+    add(new THREE.CylinderGeometry(4, 4, 22, 24), 0, top - t - h / 2, dz + dd + 4, 0).rotation.z = Math.PI / 2;
+  }
+  if (el === "kutija") {
+    const w = D("w"), h = D("h"), d = D("d"); addInsert(mid); box(16, 40, 6, mid.x, y - 10, F + 3);
+    openBox(w, h, d, 0, y + 8 - h, F + 6);
+    box(w + 3, 3, d + 3, 0, y + 8 + 14, F + 6 + d / 2); box(w - 6, 4, d - 6, 0, y + 8 + 11, F + 6 + d / 2);
+    add(new THREE.CylinderGeometry(5, 5, 6, 24), 0, y + 8 + 26.5, F + 6 + d / 2);
+  }
+  if (el === "odvijaci") {
+    const w = D("w"), d = D("d"), r = D("hole") / 2, n = Math.max(1, Math.floor((w - 10) / (2 * r + 8))), holes = [];
+    for (let i = 0; i < n; i++) holes.push([-w / 2 + w * (i + .5) / n, d * .55, r]);
+    pair(w); back(w, 30, y - 3); plate(w, d, 8, y - 10, holes);
+  }
+  if (el === "kljucevi") {
+    const w = D("w"), d = D("d"), n = Math.max(2, Math.floor(w / 13)), holes = [];
+    for (let i = 0; i < n; i++) { const r = 1.2 + i * (4 / (n - 1)); holes.push([-w / 2 + w * (i + .5) / n, d * .55, r]); }
+    pair(w); back(w, 26, y - 3); plate(w, d, 10, y - 8, holes);
+  }
+  if (el === "klesta") {
+    const w = D("w"), d = D("d"), sw = D("slot"), n = Math.max(1, Math.floor(w / (sw + 14))), holes = [];
+    for (let i = 0; i < n; i++) holes.push([-w / 2 + w * (i + .5) / n, d * .58, sw, d * .5]);
+    pair(w); back(w, 30, y - 3); plate(w, d, 8, y - 10, holes);
+  }
+  if (el === "kalem") {
+    const L = D("len"), r = D("dia") / 2; [nearest(row1, -P / 2), nearest(row1, P / 2)].forEach(addInsert);
+    box(2 * P + 10, 2 * r + 16, 5, 0, y, F + 2.5);
+    add(new THREE.CylinderGeometry(r, r, L, 48), 0, y, F + L / 2, Math.PI / 2);
+    add(new THREE.CylinderGeometry(r + 8, r + 8, 4, 48), 0, y, F + L, Math.PI / 2);
+  }
+  if (el === "traka") {
+    const L = D("len"), r = D("dia") / 2 - 1.5; addInsert(mid);
+    add(new THREE.CylinderGeometry(r, r, L, 48, 1, true), mid.x, y - r + 6, F + L / 2, Math.PI / 2, matD);
+    add(new THREE.CylinderGeometry(r + 6, r + 6, 3, 48), mid.x, y - r + 6, F + L, Math.PI / 2);
+    const roll = new THREE.Shape(); roll.absarc(0, 0, r + 16, 0, Math.PI * 2); const hl = new THREE.Path(); hl.absarc(0, 0, r + 1.5, 0, Math.PI * 2, true); roll.holes.push(hl);
+    const rg = new THREE.ExtrudeGeometry(roll, { depth: 19, bevelEnabled: false, curveSegments: 48 });
+    for (let i = 0; i < Math.floor((L - 6) / 21); i++) add(rg, mid.x, y - r + 6, F + 2 + i * 21, 0, white);
+  }
+  if (el === "kablovi") {
+    const r0 = rowOf(0), r2 = rowOf(2), a = nearest(r0, 0), b = nearest(r2, 0);
+    [a, b].forEach((v, i) => { addInsert(v); hook(v, D("len"), D("tip"), 4.5, i ? 1 : -1); });
+    box(16, a.y - b.y + 16, 4, a.x, (a.y + b.y) / 2, F + 2);
+  }
+  if (el === "sprej") {
+    const R = D("dia") / 2, n = D("cnt"), w = n * (2 * R + 8); pair(w); back(w, 36, y - 4);
+    for (let i = 0; i < n; i++) {
+      const x = -w / 2 + (2 * R + 8) * (i + .5);
+      add(new THREE.CylinderGeometry(R + 2, R + 2, 22, 48, 1, true), x, y - 10, F + 4 + R + 2, 0, matD);
+      add(new THREE.CylinderGeometry(R * .6, R * .6, 3, 32), x, y - 60, F + 4 + R + 2);
+      box(6, 50, 3, x, y - 36, F + 4 + 2 * R + 3);
+    }
+  }
+  if (el === "telefon") {
+    const w = D("w"), gap = D("d"), lip = D("lip"); pair(w); back(w, 34, y - 4);
+    box(w, 5, gap + 6, 0, y - 23, F + (gap + 6) / 2); box(w, lip, 3, 0, y - 25.5 + lip / 2, F + gap + 4.5);
+  }
+  if (el === "lemilica") {
+    const R = D("dia") / 2 + 2, L = D("len"); addInsert(mid); box(18, 46, 5, mid.x, y - 10, F + 2.5);
+    const t = add(new THREE.CylinderGeometry(R, R * .55, L, 40, 1, true), mid.x, y - 14, F + 10 + R + L * .25, -.6, matD);
+    box(2 * R + 8, 6, 2 * R + 14, mid.x, y - 30, F + 8 + R);
+  }
+  if (el === "gridfinity") {
+    const nc = D("cols"), nr = D("rows"), w = nc * 42, d = nr * 42, top = y - 15; pair(w); back(w, 30, y - 3);
+    box(w, 5, d, 0, top - 2.5, F + d / 2);
+    for (let i = 0; i <= nc; i++) box(1.6, 2, d, -w / 2 + i * 42, top + 1, F + d / 2);
+    for (let j = 0; j <= nr; j++) box(w, 2, 1.6, 0, top + 1, F + j * 42);
+    box(w, 8, 3, 0, top + 4, F + d + 1.5);
+  }
+  if (el === "etiketa") {
+    const w = D("w"), h = D("h"); addInsert(mid);
+    box(w, h, 2, 0, y - 6, F + 1); box(w, 2.5, 4, 0, y - 6 + h / 2 - 1.25, F + 3); box(w, 2.5, 4, 0, y - 6 - h / 2 + 1.25, F + 3);
+    box(2.5, h, 4, -w / 2 + 1.25, y - 6, F + 3);
+    box(w - 6, h - 5, .6, 1.5, y - 6, F + 2.6, white);
+  }
+  if (el === "cep") {
+    const hr = D("hole") / 2; addInsert(mid);
+    const s = hexShape(RO * .97); if (hr > 0) { const p = new THREE.Path(); p.absarc(0, 0, hr, 0, Math.PI * 2, true); s.holes.push(p); }
+    add(new THREE.ExtrudeGeometry(s, { depth: 3, bevelEnabled: false, curveSegments: 24 }), mid.x, mid.y, T);
+    if (hr > 0) add(new THREE.CylinderGeometry(hr * .7, hr * .7, 60, 24), mid.x, mid.y, T + 10, Math.PI / 2, new THREE.MeshStandardMaterial({ color: "#222", roughness: .5 }));
+  }
+  g.position.z = -20;
+  frame(Math.max(170, cols * P + 40), .75, .3);
+}
+
+// ---------- patterns on flat surfaces (boxes and HSW elements) ----------
+// a flat plate a × b mm, thickness th, with the pattern inside a solid frame; real holes (same contour path as the ornament net)
+const PLATE_CACHE = new Map();
+function patPlateGeo(a, b, th) {
+  const p = S.pat, key = [a, b, th, p.kind, p.cell, p.rib, p.frame].map((v) => typeof v === "number" ? v.toFixed(2) : v).join("|");
+  if (PLATE_CACHE.has(key)) return PLATE_CACHE.get(key);
+  const Smm = Math.max(a, b) * 1.04, n = N, k = n / Smm, cv = document.createElement("canvas"); cv.width = cv.height = n;
+  const ctx = cv.getContext("2d", { willReadFrequently: true }), cx = n / 2, cy = n / 2, f = Math.min(p.frame, Math.min(a, b) / 2 - 1);
+  const ix = (a / 2 - f) * k, iy = (b / 2 - f) * k, ox = a / 2 * k, oy = b / 2 * k;
+  ctx.save(); ctx.beginPath(); ctx.rect(cx - ix, cy - iy, 2 * ix, 2 * iy); ctx.clip(); drawPattern(ctx, p.kind, p.cell * k, p.rib * k); ctx.restore();
+  ctx.fillStyle = "#fff"; ctx.beginPath(); ctx.rect(cx - ox, cy - oy, 2 * ox, 2 * oy); ctx.rect(cx - ix, cy - iy, 2 * ix, 2 * iy); ctx.fill("evenodd");
+  // share of material left, for the filament estimate
+  const d = ctx.getImageData(Math.floor(cx - ox), Math.floor(cy - oy), Math.max(1, Math.round(2 * ox)), Math.max(1, Math.round(2 * oy))).data;
+  let on = 0; for (let i = 3; i < d.length; i += 4) if (d[i] > 127) on++;
+  const geo = new THREE.ExtrudeGeometry(netShapes(cv, Smm), { depth: th, bevelEnabled: false, curveSegments: 1 });
+  geo.translate(0, 0, -th / 2); geo.userData.fill = on / (d.length / 4);
+  if (PLATE_CACHE.size > 60) PLATE_CACHE.clear();
+  PLATE_CACHE.set(key, geo);
+  return geo;
+}
+// box-shaped plate w × h × d (one side thin); patterned when asked and big enough, otherwise solid. Returns the mesh, adds solid volume to acc.
+function patBox(w, h, d, usePat, mat, acc) {
+  const dims = [w, h, d], thin = dims.indexOf(Math.min(...dims)), th = dims[thin];
+  const [a, b] = thin === 2 ? [w, h] : thin === 1 ? [w, d] : [d, h];
+  const can = usePat && S.pat.kind !== "bez" && Math.min(a, b) >= 2 * S.pat.frame + S.pat.cell && th <= 6;
+  if (!can) { if (acc) acc.v += w * h * d; return new THREE.Mesh(new THREE.BoxGeometry(w, h, d), mat); }
+  const geo = patPlateGeo(a, b, th), m = new THREE.Mesh(geo, mat);
+  if (thin === 1) m.rotation.x = Math.PI / 2; else if (thin === 0) m.rotation.y = Math.PI / 2;
+  if (acc) acc.v += w * h * d * geo.userData.fill;
+  return m;
+}
+
+// ---------- Kutija ----------
+const LIDS = { bez: "Bez", nasadni: "Nasadni", sarke: "Šarke", klizni: "Klizni", klik: "Klik" };
+const GRIPS = { bez: "Bez", jezicak: "Jezičak", dugme: "Dugme", udubljenje: "Udubljenje" };
+const BOX_DIMS = [["w", "Širina", 20, 280, 1, "mm"], ["d", "Dubina", 20, 280, 1, "mm"], ["h", "Visina", 10, 200, 1, "mm"], ["wall", "Zid", .8, 5, .1, "mm"],
+  ["floor", "Dno", .8, 5, .1, "mm"], ["gap", "Zazor poklopca", .1, .8, .05, "mm"], ["snap", "Zub (zatezanje)", .4, 1.6, .05, "mm"], ["divX", "Pregrade po širini", 0, 6, 1, ""], ["divY", "Pregrade po dubini", 0, 6, 1, ""]];
+const BOX = { acc: { v: 0 } };
+function buildBox(reframe = true) {
+  clearRoot();
+  const b = S.box, t = b.wall, fl = b.floor, W = b.w, D = b.d, H = b.h, g = new THREE.Group(); root.add(g);
+  const mat = filamentMat({ side: THREE.DoubleSide }), acc = { v: 0 };
+  const pat = (k) => S.pat.surf[k];
+  const plate = (w, h, d, x, y, z, key, parent = g) => { const m = patBox(w, h, d, pat(key), mat, acc); m.position.set(x, y, z); parent.add(m); return m; };
+  const solid = (w, h, d, x, y, z, parent = g, m2 = mat) => { const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), m2); m.position.set(x, y, z); parent.add(m); acc.v += w * h * d; return m; };
+  const kl = b.lid === "klizni", lt = Math.max(1.6, Math.min(t, 3)), wallH = H - fl;
+  // body
+  plate(W, fl, D, 0, fl / 2, 0, "dno");
+  plate(W, wallH, t, 0, fl + wallH / 2, -D / 2 + t / 2, "zidovi");
+  const frontH = kl ? wallH - lt - 1.5 : wallH;
+  plate(W, frontH, t, 0, fl + frontH / 2, D / 2 - t / 2, "zidovi");
+  plate(t, wallH, D - 2 * t, -W / 2 + t / 2, fl + wallH / 2, 0, "zidovi");
+  plate(t, wallH, D - 2 * t, W / 2 - t / 2, fl + wallH / 2, 0, "zidovi");
+  const ih = wallH - (b.lid === "nasadni" ? 7 : 3);
+  for (let i = 1; i <= b.divX; i++) plate(1.6, ih, D - 2 * t, -W / 2 + t + (W - 2 * t) * i / (b.divX + 1), fl + ih / 2, 0, "pregrade");
+  for (let j = 1; j <= b.divY; j++) plate(W - 2 * t, ih, 1.6, 0, fl + ih / 2, -D / 2 + t + (D - 2 * t) * j / (b.divY + 1), "pregrade");
+  // lid
+  const open = b.view === "otvoreno", dark = new THREE.MeshStandardMaterial({ color: "#1d1e21", roughness: .9 });
+  const lid = new THREE.Group();
+  const grip = (topY, frontZ) => {
+    if (b.grip === "dugme") { const k = new THREE.Mesh(new THREE.CylinderGeometry(6, 7, 8, 32), mat); k.position.set(0, topY + 4, 0); lid.add(k); const c = new THREE.Mesh(new THREE.SphereGeometry(6, 24, 12, 0, Math.PI * 2, 0, Math.PI / 2), mat); c.position.set(0, topY + 8, 0); lid.add(c); }
+    if (b.grip === "jezicak") solid(22, lt, 9, 0, topY - lt / 2, frontZ + 4.5, lid);
+    if (b.grip === "udubljenje") { const e = new THREE.Mesh(new THREE.CircleGeometry(1, 40), dark); e.scale.set(13, 5, 1); e.rotation.x = -Math.PI / 2; e.position.set(0, topY + .05, frontZ - 10); lid.add(e); }
+  };
+  if (b.lid === "nasadni") {
+    plate(W, lt, D, 0, lt / 2, 0, "poklopac", lid);
+    const sw = W - 2 * t - 2 * b.gap, sd = D - 2 * t - 2 * b.gap, sh = 6, st = 1.6;
+    solid(sw, sh, st, 0, -sh / 2, sd / 2 - st / 2, lid); solid(sw, sh, st, 0, -sh / 2, -sd / 2 + st / 2, lid);
+    solid(st, sh, sd - 2 * st, sw / 2 - st / 2, -sh / 2, 0, lid); solid(st, sh, sd - 2 * st, -sw / 2 + st / 2, -sh / 2, 0, lid);
+    grip(lt, D / 2);
+    lid.position.y = H + (open ? 30 : 0); if (open) lid.rotation.x = -.18;
+  }
+  if (b.lid === "sarke") {
+    // print-in-place hinge along the back edge: knuckles alternate between body and lid, the lid turns around their axis
+    const r = lt / 2 + 1.6, off = D / 2 + r - .2, inner = new THREE.Group(); lid.add(inner);
+    plate(W, lt, D, 0, 0, off, "poklopac", inner);
+    const n = 5, seg = (W - 4) / n;
+    for (let i = 0; i < n; i++) {
+      const k = new THREE.Mesh(new THREE.CylinderGeometry(r, r, seg - .6, 28), mat); k.rotation.z = Math.PI / 2;
+      if (i % 2) { k.position.set(-W / 2 + 2 + seg * (i + .5), 0, 0); inner.add(k); }
+      else { k.position.set(-W / 2 + 2 + seg * (i + .5), H + lt / 2, -off); g.add(k); }
+    }
+    if (b.grip === "jezicak") { const m = new THREE.Mesh(new THREE.BoxGeometry(22, lt, 9), mat); m.position.set(0, 0, off + D / 2 + 4.5); inner.add(m); }
+    if (b.grip === "dugme") { const k = new THREE.Mesh(new THREE.CylinderGeometry(6, 7, 8, 32), mat); k.position.set(0, lt / 2 + 4, off); inner.add(k); }
+    if (b.grip === "udubljenje") { const e = new THREE.Mesh(new THREE.CircleGeometry(1, 40), dark); e.scale.set(13, 5, 1); e.rotation.x = -Math.PI / 2; e.position.set(0, lt / 2 + .05, off + D / 2 - 10); inner.add(e); }
+    lid.position.set(0, H + lt / 2, -off);
+    if (open) lid.rotation.x = -1.95;
+  }
+  if (b.lid === "klizni") {
+    // lid runs in grooves cut halfway into the side and back walls, enters over the lowered front wall
+    const lw = W - t - 2 * b.gap, ld = D - t / 2 - b.gap;
+    plate(lw, lt, ld, 0, 0, 0, "poklopac", lid);
+    if (b.grip === "jezicak") solid(lw * .5, 4, 2, 0, lt / 2 + 2, ld / 2 - 4, lid);
+    if (b.grip === "dugme") { const k = new THREE.Mesh(new THREE.CylinderGeometry(6, 7, 6, 32), mat); k.position.set(0, lt / 2 + 3, ld / 2 - 14); lid.add(k); }
+    if (b.grip === "udubljenje") { const e = new THREE.Mesh(new THREE.CircleGeometry(1, 40), dark); e.scale.set(13, 5, 1); e.rotation.x = -Math.PI / 2; e.position.set(0, lt / 2 + .05, ld / 2 - 12); lid.add(e); }
+    lid.position.set(0, H - 1.5 - lt / 2, t / 4 + (open ? D * .6 : 0));
+    // groove marks on the inner faces of the side walls
+    for (const sx of [-1, 1]) { const gm = new THREE.Mesh(new THREE.BoxGeometry(.3, lt + .4, D - t), dark); gm.position.set(sx * (W / 2 - t + .1), H - 1.5 - lt / 2, t / 2); g.add(gm); }
+  }
+  if (b.lid === "klik") {
+    // snap lid (profil sa zaky.labs skice): obod 2 mm spolja oko zida, zub na dnu oboda uskače u džep na spoljnoj strani zida, dole spolja proširenje za prst
+    const fo = 2, g0 = b.gap, fh = 3.4 + 1.5, OW = W + 2 * (g0 + fo), OD = D + 2 * (g0 + fo);
+    plate(OW, lt, OD, 0, lt / 2, 0, "poklopac", lid);
+    solid(OW, fh, fo, 0, -fh / 2, OD / 2 - fo / 2, lid); solid(OW, fh, fo, 0, -fh / 2, -OD / 2 + fo / 2, lid);
+    solid(fo, fh, OD - 2 * fo, OW / 2 - fo / 2, -fh / 2, 0, lid); solid(fo, fh, OD - 2 * fo, -OW / 2 + fo / 2, -fh / 2, 0, lid);
+    const lip = 2; // proširenje 2 × 2 na dnu oboda
+    solid(OW + 2 * lip, 1.2, lip, 0, -fh + .6, OD / 2 + lip / 2, lid); solid(OW + 2 * lip, 1.2, lip, 0, -fh + .6, -OD / 2 - lip / 2, lid);
+    solid(lip, 1.2, OD, OW / 2 + lip / 2, -fh + .6, 0, lid); solid(lip, 1.2, OD, -OW / 2 - lip / 2, -fh + .6, 0, lid);
+    grip(lt, OD / 2);
+    // džep za zub na spoljnoj strani zida (3,4 do 5,3 mm ispod vrha)
+    const gy = H - 3.4 - .95, gh = 1.9;
+    for (const [w2, d2, x, z] of [[W + .1, .2, 0, D / 2], [W + .1, .2, 0, -D / 2], [.2, D + .1, W / 2, 0], [.2, D + .1, -W / 2, 0]]) { const m = new THREE.Mesh(new THREE.BoxGeometry(w2, gh, d2), dark); m.position.set(x, gy, z); g.add(m); }
+    lid.position.y = H + (open ? 28 : 0);
+  }
+  if (b.lid !== "bez") g.add(lid);
+  BOX.acc = acc;
+  drawPresek();
+  g.position.y = -H / 2;
+  if (reframe) frame(Math.max(W, D, H) * 1.45, .65, .5);
+}
+// presek spoja za Klik poklopac, mere u mm (x udesno = spolja, y nagore, 0 = gornja spoljna ivica zida)
+function drawPresek() {
+  const el = $("#presek"); if (!el) return;
+  const on = S.mode === "box" && S.box.lid === "klik"; el.classList.toggle("on", on); if (!on) return;
+  const b = S.box, T = Math.max(b.wall, 3), z = b.snap, gp = b.gap, lt = Math.max(1.6, Math.min(b.wall, 3)), yb = -4.9;
+  const base = [[-T, -9], [-T, 0], [-1.6, 0], [0, -3.4], [-1.25, -3.4], [0, -5.3], [0, -9]];
+  const lid = [[-T - 2, lt], [gp + 2, lt], [gp + 2, yb + 2], [gp + 4, yb], [gp, yb], [gp - z, -3.4], [gp, -3.4], [gp, 0], [-T - 2, 0]];
+  const sc = 14, X = (x) => ((x + T + 2.5) * sc).toFixed(1), Y = (y) => ((lt + .8 - y) * sc).toFixed(1);
+  const poly = (p, f) => `<polygon points="${p.map(([x, y]) => X(x) + "," + Y(y)).join(" ")}" fill="${f}" stroke="var(--bg)" stroke-width="1"/>`;
+  const t = (x, y, s) => `<text x="${X(x)}" y="${Y(y)}" font-size="10" fill="var(--text)" text-anchor="middle">${s}</text>`;
+  const w = (T + 2.5 + gp + 8) * sc, h = (lt + .8 + 9.5) * sc;
+  el.querySelector("svg").setAttribute("viewBox", `0 0 ${w.toFixed(0)} ${h.toFixed(0)}`);
+  el.querySelector("svg").innerHTML = poly(base, "var(--muted)") + poly(lid, "var(--accent)") +
+    t(-T / 2, -8.2, "zid") + `<text x="${X(gp + 2.6)}" y="${Y(-.8)}" font-size="10" fill="var(--text)">obod</text>` + `<text x="${X(gp + 2.6)}" y="${Y(-6.6)}" font-size="10" fill="var(--text)">zub ${fmtNum(z, 2)}</text>`;
+}
+function boxGrams() { return BOX.acc.v * MATS[S.mat].dens / 1000 * .9; }
+
+// ---------- Logo: slika → boje → slojevi (jedna boja po visinskom pojasu, kao kod štampe sa promenom filamenta) ----------
+const LOGO = { work: null, name: "", w: 0, h: 0, clusters: [], labels: null, bbox: null, bands: [], grams: 0 };
+const EXTRAS = { bez: "Bez", magnet: "Magnet", privezak: "Privezak", igla: "Igla" };
+const COLOR_NAMES = [["bela", [245, 245, 245]], ["crna", [25, 25, 25]], ["siva", [128, 128, 128]], ["crvena", [200, 30, 40]], ["narandžasta", [240, 130, 30]],
+  ["žuta", [240, 210, 40]], ["zlatna", [200, 160, 60]], ["zelena", [40, 150, 70]], ["plava", [40, 90, 200]], ["svetloplava", [110, 180, 230]],
+  ["ljubičasta", [130, 60, 170]], ["roze", [235, 130, 170]], ["braon", [120, 75, 40]], ["bež", [225, 205, 170]]];
+const colorName = (c) => COLOR_NAMES.reduce((a, n) => { const d = (n[1][0] - c[0]) ** 2 + (n[1][1] - c[1]) ** 2 + (n[1][2] - c[2]) ** 2; return d < a[1] ? [n[0], d] : a; }, ["", 1e9])[0];
+const hex = (c) => "#" + c.map((v) => Math.round(v).toString(16).padStart(2, "0")).join("");
+
+// built-in sample (original, not a real brand)
+function sampleLogo() {
+  const c = document.createElement("canvas"); c.width = c.height = 512; const x = c.getContext("2d");
+  const disc = (r, col) => { x.fillStyle = col; x.beginPath(); x.arc(256, 256, r, 0, 7); x.fill(); };
+  disc(232, "#ffffff"); disc(210, "#1c1c1c"); disc(148, "#ffffff"); disc(132, "#1c1c1c");
+  x.fillStyle = "#ffffff"; x.beginPath(); for (let i = 0; i < 10; i++) { const r = i % 2 ? 40 : 98, a = -Math.PI / 2 + i * Math.PI / 5; x[i ? "lineTo" : "moveTo"](256 + r * Math.cos(a), 256 + r * Math.sin(a)); } x.fill();
+  x.font = "bold 34px sans-serif"; x.textAlign = "center"; x.textBaseline = "middle";
+  const txt = "RADIONICA · OŽILJAK · RADIONICA · OŽILJAK · ", step = Math.PI * 2 / txt.length;
+  for (let i = 0; i < txt.length; i++) { const a = -Math.PI / 2 + i * step; x.save(); x.translate(256 + 179 * Math.cos(a), 256 + 179 * Math.sin(a)); x.rotate(a + Math.PI / 2); x.fillText(txt[i], 0, 0); x.restore(); }
+  return c;
+}
+function setLogoSource(src, name) {
+  const s = Math.min(1, 512 / Math.max(src.width, src.height)), w = Math.max(1, Math.round(src.width * s)), h = Math.max(1, Math.round(src.height * s));
+  const c = document.createElement("canvas"); c.width = w; c.height = h; c.getContext("2d", { willReadFrequently: true }).drawImage(src, 0, 0, w, h);
+  LOGO.work = c; LOGO.name = name; LOGO.w = w; LOGO.h = h; quantizeLogo();
+}
+// k-means on the opaque pixels; background = transparency, or the cluster that dominates the border
+function quantizeLogo() {
+  const n = S.logo.colors, { w, h } = LOGO, d = LOGO.work.getContext("2d").getImageData(0, 0, w, h).data;
+  let transBorder = 0, border = 0;
+  for (let x = 0; x < w; x++) for (const y of [0, h - 1]) { border++; if (d[(y * w + x) * 4 + 3] < 128) transBorder++; }
+  for (let y = 0; y < h; y++) for (const x of [0, w - 1]) { border++; if (d[(y * w + x) * 4 + 3] < 128) transBorder++; }
+  const transparentBg = transBorder / border > .3, k = n + (transparentBg ? 0 : 1);
+  const pts = []; for (let i = 0; i < w * h; i += 3) if (d[i * 4 + 3] >= 128) pts.push([d[i * 4], d[i * 4 + 1], d[i * 4 + 2]]);
+  const rnd = mulberry(11), C = [pts[Math.floor(rnd() * pts.length)].slice()];
+  while (C.length < k) { // k-means++
+    const dist = pts.map((p) => Math.min(...C.map((c) => (p[0] - c[0]) ** 2 + (p[1] - c[1]) ** 2 + (p[2] - c[2]) ** 2)));
+    let r = rnd() * dist.reduce((a, b) => a + b, 0), i = 0; while ((r -= dist[i]) > 0 && i < pts.length - 1) i++; C.push(pts[i].slice());
+  }
+  const near = (p) => { let b = 0, bd = 1e12; for (let j = 0; j < C.length; j++) { const dd = (p[0] - C[j][0]) ** 2 + (p[1] - C[j][1]) ** 2 + (p[2] - C[j][2]) ** 2; if (dd < bd) { bd = dd; b = j; } } return b; };
+  for (let it = 0; it < 10; it++) {
+    const sum = C.map(() => [0, 0, 0, 0]);
+    for (const p of pts) { const j = near(p); sum[j][0] += p[0]; sum[j][1] += p[1]; sum[j][2] += p[2]; sum[j][3]++; }
+    sum.forEach((s, j) => { if (s[3]) C[j] = [s[0] / s[3], s[1] / s[3], s[2] / s[3]]; });
+  }
+  const L = new Int8Array(w * h), cnt = C.map(() => 0);
+  for (let i = 0; i < w * h; i++) { if (d[i * 4 + 3] < 128) { L[i] = -1; continue; } const j = near([d[i * 4], d[i * 4 + 1], d[i * 4 + 2]]); L[i] = j; cnt[j]++; }
+  let bg = -1;
+  if (!transparentBg) {
+    const bc = C.map(() => 0);
+    for (let x = 0; x < w; x++) { bc[L[x]]++; bc[L[(h - 1) * w + x]]++; }
+    for (let y = 0; y < h; y++) { bc[L[y * w]]++; bc[L[y * w + w - 1]]++; }
+    bg = bc.indexOf(Math.max(...bc));
+    for (let i = 0; i < L.length; i++) if (L[i] === bg) L[i] = -1;
+  }
+  LOGO.clusters = C.map((c, j) => ({ rgb: c, hex: hex(c), name: colorName(c), count: cnt[j], bg: j === bg }));
+  LOGO.labels = L;
+  // stacking order (bottom → top): largest region first = base color
+  S.logo.order = LOGO.clusters.map((c, j) => j).filter((j) => !LOGO.clusters[j].bg && LOGO.clusters[j].count > 0).sort((a, b) => LOGO.clusters[b].count - LOGO.clusters[a].count);
+  let x0 = w, y0 = h, x1 = 0, y1 = 0;
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) if (L[y * w + x] >= 0) { if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y; }
+  LOGO.bbox = { x0, y0, x1: x1 + 1, y1: y1 + 1 };
+  log("INFO", `logo: ${LOGO.name}, ${S.logo.order.length} boja, pozadina ${transparentBg ? "providna" : "obojena"}`);
+}
+const bandT = (i) => i === 0 ? S.logo.base : (S.logo.t[i] ?? .6);
+function buildLogo(reframe = true) {
+  clearRoot();
+  if (!LOGO.work) setLogoSource(sampleLogo(), "primer");
+  const lg = S.logo, { w, h, labels, bbox } = LOGO, order = lg.order;
+  const rank = new Int8Array(LOGO.clusters.length).fill(-1); order.forEach((j, i) => (rank[j] = i));
+  const mmPerPx = lg.width / (bbox.x1 - bbox.x0), Hmm = (bbox.y1 - bbox.y0) * mmPerPx;
+  const tabR = 6, extraTop = lg.extra === "privezak" ? lg.rim + tabR * 2 + 2 : 0;
+  const Smm = Math.max(lg.width, Hmm + 2 * extraTop) + 2 * (lg.rim + 6), n = N, k = n / Smm;
+  const cxPx = (bbox.x0 + bbox.x1) / 2, cyPx = (bbox.y0 + bbox.y1) / 2, sc = mmPerPx * k;
+  const g = new THREE.Group(); root.add(g);
+  const small = document.createElement("canvas"); small.width = w; small.height = h; const sx = small.getContext("2d");
+  const img = sx.createImageData(w, h);
+  let z = 0; LOGO.bands = []; let grams = 0;
+  for (let i = 0; i < order.length; i++) {
+    for (let p = 0; p < w * h; p++) { const on = labels[p] >= 0 && rank[labels[p]] >= i; img.data[p * 4 + 3] = on ? 255 : 0; img.data[p * 4] = img.data[p * 4 + 1] = img.data[p * 4 + 2] = 255; }
+    sx.putImageData(img, 0, 0);
+    const big = document.createElement("canvas"); big.width = big.height = n; const bx = big.getContext("2d", { willReadFrequently: true });
+    bx.imageSmoothingEnabled = true; bx.filter = `blur(${(lg.smooth * sc * .35).toFixed(2)}px)`;
+    const dx = n / 2 - cxPx * sc, dy = n / 2 - cyPx * sc;
+    if (i === 0 && lg.rim > 0) { // outline around the logo = dilation of the whole mask
+      const r = lg.rim * k; for (let a = 0; a < 24; a++) bx.drawImage(small, dx + r * Math.cos(a / 24 * Math.PI * 2), dy + r * Math.sin(a / 24 * Math.PI * 2), w * sc, h * sc);
+    }
+    bx.drawImage(small, dx, dy, w * sc, h * sc); bx.filter = "none";
+    if (i === 0 && lg.extra === "privezak") { // tab with a hole on top
+      const ty = n / 2 - (Hmm / 2 + lg.rim + tabR) * k;
+      bx.fillStyle = "#fff"; bx.beginPath(); bx.arc(n / 2, ty, tabR * k, 0, 7); bx.fill(); bx.fillRect(n / 2 - tabR * k, ty, 2 * tabR * k, (tabR + lg.rim) * k);
+      bx.globalCompositeOperation = "destination-out"; bx.beginPath(); bx.arc(n / 2, ty, 2.2 * k, 0, 7); bx.fill(); bx.globalCompositeOperation = "source-over";
+    }
+    const t = bandT(i), cl = LOGO.clusters[order[i]];
+    const geo = new THREE.ExtrudeGeometry(netShapes(big, Smm), { depth: t, bevelEnabled: false, curveSegments: 1 });
+    const mesh = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({ color: new THREE.Color(cl.hex).convertSRGBToLinear(), roughness: .6, metalness: 0 }));
+    mesh.position.z = z; g.add(mesh);
+    const area = bx.getImageData(0, 0, n, n).data; let on = 0; for (let p = 3; p < area.length; p += 16) if (area[p] > 127) on++;
+    grams += on * 4 / (k * k) * t * MATS[S.mat].dens / 1000;
+    LOGO.bands.push({ z0: z, z1: z + t, name: cl.name, hex: cl.hex });
+    z += t;
+  }
+  LOGO.grams = grams; LOGO.size = [lg.width + 2 * lg.rim, Hmm + 2 * lg.rim + extraTop, z];
+  // back side extras (markers: real pocket/slot is cut in the export)
+  const dark = new THREE.MeshStandardMaterial({ color: "#151517", roughness: .9 });
+  if (lg.extra === "magnet") { const m = new THREE.Mesh(new THREE.CircleGeometry(lg.mag / 2, 40), dark); m.rotation.y = Math.PI; m.position.z = -.02; g.add(m); }
+  if (lg.extra === "igla") { const m = new THREE.Mesh(new THREE.PlaneGeometry(26, 4), dark); m.rotation.y = Math.PI; m.position.set(0, Hmm * .15, -.02); g.add(m); }
+  g.position.z = -z / 2;
+  drawLogoPreview(); drawPlan();
+  if (reframe) frame(Smm * .85, .25, .3);
+}
+function drawLogoPreview() {
+  const c = $("#logoprev"); if (!c || !LOGO.labels) return;
+  const { w, h, labels, clusters } = LOGO; c.width = w; c.height = h; const x = c.getContext("2d"), im = x.createImageData(w, h);
+  for (let p = 0; p < w * h; p++) { const l = labels[p]; if (l < 0) continue; const col = clusters[l].rgb; im.data[p * 4] = col[0]; im.data[p * 4 + 1] = col[1]; im.data[p * 4 + 2] = col[2]; im.data[p * 4 + 3] = 255; }
+  x.putImageData(im, 0, 0);
+}
+function drawPlan() {
+  const el = $("#planbox"); if (!el) return;
+  const on = S.mode === "logo"; el.classList.toggle("on", on); if (!on) return;
+  const k2 = S.printer === "k2", rows = LOGO.bands.map((b, i) =>
+    `<div class="pr"><span class="sw1" style="background:${b.hex}"></span><span>${fmtNum(b.z0, 1)}–${fmtNum(b.z1, 1)} mm</span><b>${b.name}</b></div>${i < LOGO.bands.length - 1 ? `<div class="pc2">${k2 ? "promena" : "pauza"} na ${fmtNum(b.z1, 1)} mm</div>` : ""}`).join("");
+  el.querySelector(".plan").innerHTML = rows;
+  el.querySelector(".lbl").textContent = k2 ? "Plan boja · CFS" : "Plan boja · ručna promena";
+}
+
+// ---------- print recommendations (starting values, calibrate on the real printer) ----------
+const MATS = {
+  pla: { n: "PLA", noz: "200–215", bed: "55–60", fan: "100%", dens: 1.24 },
+  petg: { n: "PETG", noz: "230–245", bed: "75–80", fan: "30–50%", dens: 1.27 },
+  asa: { n: "ASA", noz: "250–260", bed: "95–105", fan: "0–20%", dens: 1.07 },
+  silk: { n: "Silk", noz: "210–225", bed: "55–60", fan: "100%", dens: 1.24 },
+};
+const PARTS = {
+  panel: { n: "Panel", layer: .24, walls: 3, infill: { pla: 15, petg: 15, asa: 20, silk: 15 } },
+  nosivi: { n: "Element", layer: .2, walls: 4, infill: { pla: 40, petg: 30, asa: 35, silk: 50 } },
+  polica: { n: "Polica", layer: .2, walls: 3, infill: { pla: 25, petg: 20, asa: 25, silk: 30 } },
+  posuda: { n: "Posuda", layer: .2, walls: 3, infill: { pla: 15, petg: 15, asa: 15, silk: 15 } },
+  logo: { n: "Logo", layer: .2, walls: 3, infill: { pla: 20, petg: 20, asa: 25, silk: 20 } },
+  kutija: { n: "Kutija", layer: .2, walls: 3, infill: { pla: 15, petg: 15, asa: 20, silk: 15 } },
+  mreza: { n: "Mreža", layer: .2, walls: 2, infill: { pla: 100, petg: 100, asa: 100, silk: 100 } },
+  presa: { n: "Presa", layer: .24, walls: 3, infill: { pla: 10, petg: 10, asa: 15, silk: 10 } },
+};
+const partsNow = () => S.mode === "logo" ? ["logo"] : S.mode === "box" ? ["kutija"] : S.mode === "orn" ? ["mreza", "presa"] : S.hsw.sub === "elementi" ? [EL[S.hsw.el].kind] : ["panel"];
+function printCard() {
+  const parts = partsNow(), m = MATS[S.mat], multi = parts.length > 1;
+  const row = (l, f) => `<tr><td>${l}</td>${parts.map((k) => `<td>${f(PARTS[k])}</td>`).join("")}</tr>`;
+  return `<table class="pc">${multi ? `<tr><th></th>${parts.map((k) => `<th>${PARTS[k].n}</th>`).join("")}</tr>` : ""}
+    ${row("Sloj", (p) => `${fmtNum(p.layer, 2)} mm`)}${row("Zidovi", (p) => fmtNum(p.walls))}${row("Ispuna", (p) => `${fmtNum(p.infill[S.mat])}%`)}
+    ${row("Mlaznica", () => `${m.noz} °C`)}${row("Ploča", () => `${m.bed} °C`)}${row("Ventilator", () => m.fan)}</table>`;
+}
+
+// ---------- Ornament ----------
+function arc(f, n = 180) { const a = []; for (let i = 0; i < n; i++) a.push(f(i / n * Math.PI * 2)); return a; }
+function star(n) { const ri = { 5: .46, 6: .55, 8: .62 }[n] || .55, a = []; for (let i = 0; i < 2 * n; i++) { const r = i % 2 ? ri : 1, t = Math.PI / 2 + i * Math.PI / n; a.push([r * Math.cos(t), r * Math.sin(t)]); } return a; }
+function crescent() {
+  const ci = [.42, .18], ri = .82, a0 = Math.atan2(ci[1], ci[0]) + Math.PI, out = [], inn = [];
+  for (let i = 0; i <= 240; i++) { const s = -Math.PI + i / 240 * 2 * Math.PI, x = Math.cos(a0 + s), y = Math.sin(a0 + s); if (Math.hypot(x - ci[0], y - ci[1]) >= ri) out.push([x, y]); }
+  for (let i = 240; i >= 0; i--) { const s = -Math.PI + i / 240 * 2 * Math.PI, x = ci[0] + ri * Math.cos(a0 + s), y = ci[1] + ri * Math.sin(a0 + s); if (Math.hypot(x, y) <= 1) inn.push([x, y]); }
+  return out.concat(inn);
+}
+function bell() {
+  const right = [];
+  for (let i = 0; i <= 14; i++) { const t = i / 14 * Math.PI / 2; right.push([.2 * Math.cos(t), .8 + .2 * Math.sin(t)]); }
+  right.reverse();
+  for (let i = 0; i <= 30; i++) { const y = .8 - i / 30 * 1.6; right.push([.2 + .62 * Math.pow((.8 - y) / 1.6, 2.2), y]); }
+  right.push([.9, -.86], [.9, -1]);
+  const left = right.slice().reverse().map(([x, y]) => [-x, y]);
+  return right.concat(left).filter((p, i, a) => i === 0 || p[0] !== a[i - 1][0] || p[1] !== a[i - 1][1]);
+}
+const SHAPES = {
+  krug: () => arc((t) => [Math.cos(t), Math.sin(t)]),
+  jaje: () => arc((t) => [.78 * Math.cos(t) * (1 - .14 * Math.sin(t)), Math.sin(t)]),
+  kap: () => arc((t) => [.9 * Math.sin(t) * Math.pow(Math.sin(t / 2), 1.4), Math.cos(t)]),
+  srce: () => arc((t) => [Math.pow(Math.sin(t), 3) * 16 / 17, (13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t)) / 17 + .12]),
+  zvezda: () => star(S.orn.arms),
+  jelka: () => [[0, 1], [.42, .45], [.24, .45], [.62, -.08], [.4, -.08], [.82, -.62], [.17, -.62], [.17, -.95], [-.17, -.95], [-.17, -.62], [-.82, -.62], [-.4, -.08], [-.62, -.08], [-.24, .45], [-.42, .45]],
+  mesec: crescent,
+  dijamant: () => [[0, 1], [.68, .1], [0, -1], [-.68, .1]],
+  svoj: () => O.custom || arc((t) => [Math.cos(t), Math.sin(t)]),
+};
+const SHAPE_NAMES = { krug: "Kugla", jaje: "Jaje", kap: "Kap", srce: "Srce", zvezda: "Zvezda", jelka: "Jelka", mesec: "Mesec", dijamant: "Dijamant", svoj: "Svoj SVG" };
+const PATTERNS = { sace: "Saće", pletivo: "Pletivo", krugovi: "Krugovi", trougao: "Trougao", romb: "Romb", krljust: "Krljušt", voronoi: "Voronoi", spirala: "Spirala", bez: "Puna" };
+const HANG = { kapica: "Kapica", nosac: "Nosač kapice", sraf: "Šraf" };
+const K = .46, N = 1024, M = 160, SEG = 170;
+const O = { custom: null, tex: null, base: null, geoF: null, geoB: null, plugF: null, plugB: null, meshes: null, depth: 0, smm: 0 };
+
+function mulberry(a) { return () => { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+function shapePath(pts, n) { const p = new Path2D(); pts.forEach(([x, y], i) => { const X = (.5 + x * K) * n, Y = (.5 - y * K) * n; i ? p.lineTo(X, Y) : p.moveTo(X, Y); }); p.closePath(); return p; }
+
+function drawPattern(ctx, kind, c, w) {
+  ctx.strokeStyle = "#fff"; ctx.fillStyle = "#fff"; ctx.lineWidth = w; ctx.lineJoin = "round"; ctx.lineCap = "round";
+  const lines = (deg, sp) => {
+    const a = deg * Math.PI / 180, dx = Math.cos(a), dy = Math.sin(a), nx = -dy, ny = dx, k = Math.ceil(N / sp) + 2;
+    ctx.beginPath();
+    for (let i = -k; i <= k; i++) { const px = N / 2 + nx * i * sp, py = N / 2 + ny * i * sp; ctx.moveTo(px - dx * N, py - dy * N); ctx.lineTo(px + dx * N, py + dy * N); }
+    ctx.stroke();
+  };
+  if (kind === "bez") { ctx.fillRect(0, 0, N, N); return; }
+  if (kind === "sace") {
+    const r = c / Math.sqrt(3); ctx.beginPath();
+    for (let j = -1; j * 1.5 * r < N + 2 * r; j++) for (let i = -1; i * c < N + c; i++) {
+      const cx = i * c + (Math.abs(j) % 2) * c / 2, cy = j * 1.5 * r;
+      hexPts(r).forEach(([x, y], q) => q ? ctx.lineTo(cx + x, cy + y) : ctx.moveTo(cx + x, cy + y)); ctx.closePath();
+    }
+    ctx.stroke();
+  }
+  if (kind === "krugovi") {
+    const r = c * .5, dy = c * .866, dx = c; ctx.beginPath();
+    for (let j = -1; j * dy < N + c; j++) for (let i = -1; i * dx < N + c; i++) { const cx = i * dx + (Math.abs(j) % 2) * dx / 2, cy = j * dy; ctx.moveTo(cx + r, cy); ctx.arc(cx, cy, r, 0, Math.PI * 2); }
+    ctx.stroke();
+  }
+  if (kind === "pletivo") {
+    const sp = c * .45, A = sp * .62; ctx.beginPath();
+    for (let j = -2; j * sp < N + c; j++) {
+      const ph = (Math.abs(j) % 2) * Math.PI;
+      for (let x = -c; x <= N + c; x += 2) { const y = j * sp + A * Math.sin(x / c * Math.PI * 2 + ph); x === -c ? ctx.moveTo(x, y) : ctx.lineTo(x, y); }
+    }
+    ctx.stroke();
+  }
+  if (kind === "trougao") [0, 60, 120].forEach((d) => lines(d, c * Math.sqrt(3) / 2));
+  if (kind === "romb") [58, 122].forEach((d) => lines(d, c * .62));
+  if (kind === "krljust") {
+    ctx.beginPath(); const rs = c * .5;
+    for (let j = -1; j * rs < N + c; j++) for (let i = -1; i * c < N + c; i++) {
+      const cx = i * c + (Math.abs(j) % 2) * c / 2, cy = j * rs; ctx.moveTo(cx + c / 2, cy); ctx.arc(cx, cy, c / 2, 0, Math.PI);
+    }
+    ctx.stroke();
+  }
+  if (kind === "spirala") {
+    const R = N * K, n = Math.round(clamp(R * 2 * Math.PI / (c * 3.2), 8, 48)), b = .3, r0 = c * .5;
+    ctx.beginPath();
+    for (let k = 0; k < n; k++) for (const s of [1, -1]) {
+      for (let th = 0, first = true; ; th += .04) { const r = r0 * Math.exp(b * th); if (r > N) break; const a = 2 * Math.PI * k / n + s * th; const x = N / 2 + r * Math.cos(a), y = N / 2 + r * Math.sin(a); first ? ctx.moveTo(x, y) : ctx.lineTo(x, y); first = false; }
+    }
+    ctx.stroke(); ctx.beginPath(); ctx.arc(N / 2, N / 2, r0 * 1.3, 0, 7); ctx.fill();
+  }
+  if (kind === "voronoi") {
+    const n2 = 512, sc = n2 / N, cs = c * 1.1 * sc, rnd = mulberry(7), gw = Math.ceil(n2 / cs) + 2, seeds = [];
+    for (let j = 0; j < gw; j++) for (let i = 0; i < gw; i++) seeds.push([(i - 1 + .15 + rnd() * .7) * cs, (j - 1 + .15 + rnd() * .7) * cs]);
+    const cv = document.createElement("canvas"); cv.width = cv.height = n2; const x2 = cv.getContext("2d"), img = x2.createImageData(n2, n2), half = w * sc / 2;
+    for (let y = 0; y < n2; y++) for (let x = 0; x < n2; x++) {
+      const gi = Math.floor(x / cs) + 1, gj = Math.floor(y / cs) + 1; let d1 = 1e9, d2 = 1e9, s1 = null, s2 = null;
+      for (let jj = gj - 1; jj <= gj + 1; jj++) for (let ii = gi - 1; ii <= gi + 1; ii++) {
+        if (ii < 0 || jj < 0 || ii >= gw || jj >= gw) continue;
+        const s = seeds[jj * gw + ii], d = (s[0] - x) ** 2 + (s[1] - y) ** 2;
+        if (d < d1) { d2 = d1; s2 = s1; d1 = d; s1 = s; } else if (d < d2) { d2 = d; s2 = s; }
+      }
+      const dist = (d2 - d1) / (2 * Math.hypot(s1[0] - s2[0], s1[1] - s2[1]));
+      if (dist < half) { const o = (y * n2 + x) * 4; img.data[o] = img.data[o + 1] = img.data[o + 2] = img.data[o + 3] = 255; }
+    }
+    x2.putImageData(img, 0, 0); ctx.drawImage(cv, 0, 0, N, N);
+  }
+}
+// pattern turned along each arm (like the photo of the star): one wedge per arm, seam on the wedge edges
+function drawPatternRadial(ctx, kind, c, w, n) {
+  for (let k = 0; k < n; k++) {
+    const a = -Math.PI / 2 - k * 2 * Math.PI / n, h = Math.PI / n;
+    ctx.save(); ctx.beginPath(); ctx.moveTo(N / 2, N / 2); ctx.arc(N / 2, N / 2, N, a - h, a + h); ctx.closePath(); ctx.clip();
+    ctx.translate(N / 2, N / 2); ctx.rotate(a + Math.PI / 2); ctx.translate(-N / 2, -N / 2);
+    drawPattern(ctx, kind, c, w); ctx.restore();
+  }
+  ctx.save(); ctx.strokeStyle = "#fff"; ctx.lineWidth = w; ctx.lineCap = "round"; ctx.beginPath();
+  for (let k = 0; k < n; k++) { const a = -Math.PI / 2 - (k + .5) * 2 * Math.PI / n; ctx.moveTo(N / 2, N / 2); ctx.lineTo(N / 2 + N * Math.cos(a), N / 2 + N * Math.sin(a)); }
+  ctx.stroke(); ctx.restore();
+}
+
+function distField(mask) {
+  const d = new Float32Array(M * M); for (let i = 0; i < d.length; i++) d[i] = mask[i] ? 1e9 : 0;
+  const s2 = Math.SQRT2, at = (x, y) => (x < 0 || y < 0 || x >= M || y >= M) ? 0 : d[y * M + x];
+  for (let y = 0; y < M; y++) for (let x = 0; x < M; x++) { const i = y * M + x; if (!d[i]) continue; d[i] = Math.min(d[i], at(x - 1, y) + 1, at(x, y - 1) + 1, at(x - 1, y - 1) + s2, at(x + 1, y - 1) + s2); }
+  for (let y = M - 1; y >= 0; y--) for (let x = M - 1; x >= 0; x--) { const i = y * M + x; if (!d[i]) continue; d[i] = Math.min(d[i], at(x + 1, y) + 1, at(x, y + 1) + 1, at(x + 1, y + 1) + s2, at(x - 1, y + 1) + s2); }
+  return d;
+}
+function sampleD(d, x, y) {
+  x = clamp(x - .5, 0, M - 1.001); y = clamp(y - .5, 0, M - 1.001);
+  const x0 = Math.floor(x), y0 = Math.floor(y), fx = x - x0, fy = y - y0, i = y0 * M + x0;
+  return d[i] * (1 - fx) * (1 - fy) + d[i + 1] * fx * (1 - fy) + d[i + M] * (1 - fx) * fy + d[i + M + 1] * fx * fy;
+}
+// hanger: middle of the highest part of the outline, placed on the outline itself (heart -> the dip, stocking -> top edge)
+function hangPoint(pts) {
+  const ys = pts.map((p) => p[1]), ymax = Math.max(...ys), ymin = Math.min(...ys);
+  const near = pts.filter((p) => p[1] > ymax - .04 * (ymax - ymin)), hx = near.reduce((a, p) => a + p[0], 0) / near.length;
+  let best = -Infinity;
+  pts.forEach((a, i) => { const b = pts[(i + 1) % pts.length]; if ((a[0] - hx) * (b[0] - hx) <= 0 && a[0] !== b[0]) best = Math.max(best, a[1] + (hx - a[0]) * (b[1] - a[1]) / (b[0] - a[0])); });
+  return [hx, isFinite(best) ? best : ymax, ymax];
+}
+const radialArms = () => S.orn.shape === "zvezda" ? S.orn.arms : 6;
+
+function buildOrn(reframe = true) {
+  const o = S.orn, pts = SHAPES[o.shape]();
+  const ys = pts.map((p) => p[1]), xs = pts.map((p) => p[0]);
+  const ymin = Math.min(...ys), ymax = Math.max(...ys), xmin = Math.min(...xs), xmax = Math.max(...xs);
+  const smm = o.size / ((ymax - ymin) * K); O.smm = smm;
+  const pxPerMm = N / smm, mm = (v) => v * K * smm;
+  // the flat net = alpha map
+  const cv = document.createElement("canvas"); cv.width = cv.height = N; const ctx = cv.getContext("2d");
+  const path = shapePath(pts, N);
+  ctx.save(); ctx.clip(path);
+  if (o.radial && o.pattern !== "bez") drawPatternRadial(ctx, o.pattern, o.cell * pxPerMm, o.rib * pxPerMm, radialArms());
+  else drawPattern(ctx, o.pattern, o.cell * pxPerMm, o.rib * pxPerMm);
+  ctx.restore();
+  ctx.save(); ctx.clip(path); ctx.strokeStyle = "#fff"; ctx.lineJoin = "round"; ctx.lineWidth = o.rim * 2 * pxPerMm; ctx.stroke(path); ctx.restore();
+  // fill ratio for filament estimate
+  const mc = document.createElement("canvas"); mc.width = mc.height = 256; const mx = mc.getContext("2d", { willReadFrequently: true });
+  mx.fillStyle = "#fff"; mx.fill(shapePath(pts, 256)); const mAll = mx.getImageData(0, 0, 256, 256).data;
+  mx.clearRect(0, 0, 256, 256); mx.drawImage(cv, 0, 0, 256, 256); const pAll = mx.getImageData(0, 0, 256, 256).data;
+  let inside = 0, solid = 0; for (let i = 3; i < mAll.length; i += 4) { if (mAll[i] > 127) inside++; if (pAll[i] > 127) solid++; }
+  O.area = inside * (smm / 256) ** 2; O.fill = solid / Math.max(1, inside);
+  O.w = (xmax - xmin) * K * smm; O.h = o.size;
+  // distance field -> pillow height
+  const dc = document.createElement("canvas"); dc.width = dc.height = M; const dx = dc.getContext("2d", { willReadFrequently: true });
+  dx.fillStyle = "#fff"; dx.fill(shapePath(pts, M)); const md = dx.getImageData(0, 0, M, M).data;
+  const mask = new Uint8Array(M * M); for (let i = 0; i < mask.length; i++) mask[i] = md[i * 4 + 3] > 127 ? 1 : 0;
+  const dist = distField(mask); let dmax = 0; for (const v of dist) dmax = Math.max(dmax, v);
+  O.depth = dmax * smm / M * o.bulge / 100;
+  clearRoot();
+  const geo = new THREE.PlaneGeometry(smm, smm, SEG, SEG), pos = geo.attributes.position;
+  O.base = new Float32Array(pos.count); O.dx = new Float32Array(pos.count); O.dy = new Float32Array(pos.count);
+  O.px = Float32Array.from({ length: pos.count }, (_, i) => pos.getX(i)); O.py = Float32Array.from({ length: pos.count }, (_, i) => pos.getY(i));
+  const dmaxMm = dmax * smm / M;
+  for (let i = 0; i < pos.count; i++) {
+    const u = pos.getX(i) / smm + .5, v = .5 - pos.getY(i) / smm, d = sampleD(dist, u * M, v * M);
+    if (d <= 0) continue;
+    // the net is laid along the surface: equal steps on the net = equal steps on the shell (no stretched bands at the rim)
+    const th = d / dmax * Math.PI / 2, shift = (d - dmax * (1 - Math.cos(th))) * smm / M;
+    O.base[i] = O.depth * Math.sin(th);
+    const gu = sampleD(dist, u * M + 1, v * M) - sampleD(dist, u * M - 1, v * M), gv = sampleD(dist, u * M, v * M + 1) - sampleD(dist, u * M, v * M - 1);
+    const gl = Math.hypot(gu, gv);
+    if (gl > .05 && shift > 0) { O.dx[i] = -gu / gl * shift; O.dy[i] = gv / gl * shift; }
+  }
+  O.geoF = geo; O.geoB = geo.clone(); O.plugF = geo.clone(); O.plugB = geo.clone();
+  const mapAt = (x, y) => {
+    const u = (x / smm + .5) * M, v = (.5 - y / smm) * M, d = sampleD(dist, u, v);
+    if (d <= 0) return [0, 0, 0, 0];
+    const th = d / dmax * Math.PI / 2, shift = (d - dmax * (1 - Math.cos(th))) * smm / M;
+    const gu = sampleD(dist, u + 1, v) - sampleD(dist, u - 1, v), gv = sampleD(dist, u, v + 1) - sampleD(dist, u, v - 1), gl = Math.hypot(gu, gv);
+    return gl > .05 && shift > 0 ? [-gu / gl * shift, gv / gl * shift, O.depth * Math.sin(th), d] : [0, 0, O.depth * Math.sin(th), d];
+  };
+  O.netF = O.netB = null;
+  {
+    const t0 = performance.now();
+    O.netF = buildNetGeo(netShapes(cv, smm), mapAt); O.netB = O.netF.clone(); O.netB.userData.D = O.netF.userData.D;
+    O.netMs = Math.round(performance.now() - t0);
+  }
+  O.tex = new THREE.CanvasTexture(cv); O.tex.anisotropy = 8;
+  mx.clearRect(0, 0, 256, 256); mx.fill(shapePath(pts, 256));
+  const maskTex = new THREE.CanvasTexture(mc);
+  const netMat = filamentMat({ alphaMap: O.tex, alphaTest: .5, side: THREE.DoubleSide });
+  const plugMat = new THREE.MeshStandardMaterial({ color: "#8a8f98", roughness: .8, alphaMap: maskTex, alphaTest: .5, side: THREE.DoubleSide, transparent: true, opacity: .5, depthWrite: false });
+  const g = new THREE.Group(); g.position.y = -mm((ymax + ymin) / 2);
+  const solidMat = filamentMat({ side: THREE.DoubleSide });
+  const mF = O.netF ? new THREE.Mesh(O.netF, solidMat) : new THREE.Mesh(O.geoF, netMat), mB = O.netB ? new THREE.Mesh(O.netB, solidMat) : new THREE.Mesh(O.geoB, netMat);
+  const pF = new THREE.Mesh(O.plugF, plugMat), pB = new THREE.Mesh(O.plugB, plugMat);
+  // hanger at the top of the outline
+  const top = hangPoint(pts);
+  // notch at the top (heart): hanger goes above the lobes, a post joins it to the seam in the notch
+  const hang = new THREE.Group(); hang.position.set(mm(top[0]), mm(top[2]), 0);
+  const hm = filamentMat(), nut = new THREE.Group(), drop = mm(top[2] - top[1]);
+  if (drop > 1) { const post = new THREE.Mesh(new THREE.CylinderGeometry(2.2, 2.2, drop + 2, 20), hm); post.position.y = -drop / 2; hang.add(post); }
+  if (o.hang === "kapica") {
+    const body = new THREE.Mesh(new THREE.CylinderGeometry(5, 6, 7, 32), hm); body.position.y = 2.5; hang.add(body);
+    const loop = new THREE.Mesh(new THREE.TorusGeometry(3.2, 1.3, 16, 40), hm); loop.position.y = 9.5; hang.add(loop);
+  }
+  if (o.hang === "nosac") {
+    // nosač v6 (iz četa „3D - Ukras za jelku“): stub Ø7,5 8 mm u ornamentu, vrat Ø7,5 3 mm, stepenik na Ø10,5, konus 5 mm do Ø12, ravan vrh
+    const prof = [[0, -8], [3.75, -8], [3.75, 3], [5.25, 3], [6, 8], [0, 8]].map(([x, y]) => new THREE.Vector2(x, y));
+    hang.add(new THREE.Mesh(new THREE.LatheGeometry(prof, 96), hm));
+    const slot = new THREE.Shape(); slot.absarc(-1.5, 0, .5, Math.PI / 2, Math.PI * 1.5); slot.absarc(1.5, 0, .5, -Math.PI / 2, Math.PI / 2);
+    const sl = new THREE.Mesh(new THREE.ShapeGeometry(slot, 16), new THREE.MeshBasicMaterial({ color: "#111" })); sl.rotation.x = -Math.PI / 2; sl.position.y = 8.02; hang.add(sl);
+    // kupovna metalna kapica: unutrašnji Ø12, lim 0,5, visina 5,1 (6,3 sa zubićima), žičana kukica Ø0,6
+    const metal = new THREE.MeshStandardMaterial({ color: "#e2cf93", metalness: .5, roughness: .3, side: THREE.DoubleSide });
+    const shell = new THREE.Mesh(new THREE.CylinderGeometry(6.5, 6.5, 5.1, 48, 1, true), metal); shell.position.y = 8.5 - 2.55; nut.add(shell);
+    const lid = new THREE.Mesh(new THREE.CylinderGeometry(6.5, 6.5, .5, 48), metal); lid.position.y = 8.25; nut.add(lid);
+    for (let i = 0; i < 12; i++) { const a = i / 12 * Math.PI * 2, t = new THREE.Mesh(new THREE.BoxGeometry(1.6, 1.4, .5), metal); t.position.set(6.1 * Math.cos(a), 8.5 - 5.1 - .55, 6.1 * Math.sin(a)); t.rotation.y = -a + Math.PI / 2; t.rotation.x = .25; nut.add(t); }
+    const wire = new THREE.MeshStandardMaterial({ color: "#d4d7dc", metalness: .5, roughness: .25 });
+    const loop = new THREE.Mesh(new THREE.TorusGeometry(4, .3, 10, 40), wire); loop.position.y = 13; nut.add(loop);
+    for (const sx of [-1.2, 1.2]) { const leg = new THREE.Mesh(new THREE.CylinderGeometry(.3, .3, 13, 10), wire); leg.position.set(sx, 9.5 - 6.5 + 1, 0); nut.add(leg); }
+    nut.position.y = 0; hang.add(nut);
+  }
+  if (o.hang === "sraf") {
+    const neck = new THREE.Mesh(new THREE.CylinderGeometry(4.2, 4.2, 11, 32), hm); neck.position.y = 4.5; hang.add(neck);
+    for (let i = 0; i < 5; i++) { const th = new THREE.Mesh(new THREE.TorusGeometry(4.2, .55, 8, 32), hm); th.rotation.x = Math.PI / 2; th.position.y = 1 + i * 1.9; hang.add(th); }
+    const shell = new THREE.Mesh(new THREE.CylinderGeometry(6.5, 6.5, 8, 6), hm); shell.position.y = 4; nut.add(shell);
+    const loop = new THREE.Mesh(new THREE.TorusGeometry(3.4, 1.3, 16, 40), hm); loop.position.y = 10.5; nut.add(loop);
+    nut.position.y = 3; hang.add(nut);
+  }
+  g.add(mF, mB, pF, pB, hang);
+  // press: plug + cavity, laid flat next to each other
+  const press = buildPress(pts, mm, maskTex);
+  root.add(g, press);
+  O.meshes = { pF, pB, hang, nut, g, press };
+  O.top = mm(top[2]) - mm((ymax + ymin) / 2);
+  updateOrnPose();
+  if (reframe) o.view === "presa" ? frame((O.w + 30) * 2.2, .35, .75) : frame(Math.max(o.size, O.w) * 1.05, .6, .2);
+  drawNetPreview(cv);
+}
+function buildPress(pts, mm, maskTex) {
+  const grp = new THREE.Group(), mat = new THREE.MeshStandardMaterial({ color: "#3a3b3f", roughness: .75, metalness: .05 });
+  const surfMat = new THREE.MeshStandardMaterial({ color: "#3a3b3f", roughness: .75, alphaMap: maskTex, alphaTest: .5, side: THREE.DoubleSide });
+  const outline = new THREE.Shape(pts.map(([x, y]) => new THREE.Vector2(mm(x), mm(y))));
+  const xs = pts.map((p) => mm(p[0])), ys = pts.map((p) => mm(p[1])), m = 10;
+  const bx0 = Math.min(...xs) - m, bx1 = Math.max(...xs) + m, by0 = Math.min(...ys) - m, by1 = Math.max(...ys) + m, gap = (bx1 - bx0) / 2 + 12;
+  const base = 6, H = O.depth + base;
+  // plug: outline base + pillow on top
+  const plug = new THREE.Group(); plug.position.x = -gap;
+  plug.add(new THREE.Mesh(new THREE.ExtrudeGeometry(outline, { depth: base, bevelEnabled: false }), mat));
+  // grip on the back of the plug: short stem + round cap, so it is easy to hold while pressing
+  const stem = new THREE.Mesh(new THREE.CylinderGeometry(5, 6, 12, 32), mat); stem.rotation.x = Math.PI / 2; stem.position.z = -6; plug.add(stem);
+  const cap = new THREE.Mesh(new THREE.CylinderGeometry(11, 11, 5, 40), mat); cap.rotation.x = Math.PI / 2; cap.position.z = -14.5; plug.add(cap);
+  plug.position.z = 17;
+  const top = O.geoF.clone(), tp = top.attributes.position; for (let i = 0; i < tp.count; i++) tp.setXYZ(i, O.px[i] + O.dx[i], O.py[i] + O.dy[i], base + O.base[i]); top.computeVertexNormals();
+  plug.add(new THREE.Mesh(top, surfMat));
+  // cavity: block with the outline cut out + inverted pillow as the floor
+  const cav = new THREE.Group(); cav.position.x = gap;
+  const blockShape = new THREE.Shape([new THREE.Vector2(bx0, by0), new THREE.Vector2(bx1, by0), new THREE.Vector2(bx1, by1), new THREE.Vector2(bx0, by1)]);
+  blockShape.holes.push(new THREE.Path(pts.slice().reverse().map(([x, y]) => new THREE.Vector2(mm(x), mm(y)))));
+  cav.add(new THREE.Mesh(new THREE.ExtrudeGeometry(blockShape, { depth: H, bevelEnabled: false }), mat));
+  cav.add(new THREE.Mesh(new THREE.ExtrudeGeometry(outline, { depth: base, bevelEnabled: false }), mat));
+  const floor = O.geoF.clone(), fp = floor.attributes.position; for (let i = 0; i < fp.count; i++) fp.setXYZ(i, O.px[i] + O.dx[i], O.py[i] + O.dy[i], H - O.base[i]); floor.computeVertexNormals();
+  cav.add(new THREE.Mesh(floor, surfMat));
+  grp.add(plug, cav); grp.rotation.x = -Math.PI / 2; grp.position.y = -H / 2;
+  return grp;
+}
+function updateOrnPose() {
+  if (!O.geoF) return;
+  const presa = S.orn.view === "presa";
+  O.meshes.g.visible = !presa; O.meshes.press.visible = presa;
+  if (presa) return;
+  const t = S.orn.t, f = clamp(t / .65), close = clamp((t - .65) / .35);
+  const ease = (x) => x * x * (3 - 2 * x), fe = ease(f), ce = ease(close), gg = (1 - ce) * O.depth * .9;
+  const set = (geo, sign, off) => { const p = geo.attributes.position; for (let i = 0; i < p.count; i++) p.setXYZ(i, O.px[i] + O.dx[i] * fe, O.py[i] + O.dy[i] * fe, sign * (O.base[i] * fe + off)); p.needsUpdate = true; geo.computeVertexNormals(); };
+  if (O.netF) { poseNet(O.netF, fe, gg, 1); poseNet(O.netB, fe, gg, -1); } else { set(O.geoF, 1, gg); set(O.geoB, -1, gg); }
+  const showPlug = S.orn.press && f < 1;
+  O.meshes.pF.visible = O.meshes.pB.visible = showPlug;
+  if (showPlug) {
+    const sp = (geo, sign) => { const p = geo.attributes.position; for (let i = 0; i < p.count; i++) p.setXYZ(i, O.px[i] + O.dx[i], O.py[i] + O.dy[i], sign * (O.base[i] + (fe - 1) * O.depth * 1.05 + gg - .8)); p.needsUpdate = true; geo.computeVertexNormals(); };
+    sp(O.plugF, 1); sp(O.plugB, -1);
+  }
+  O.meshes.hang.visible = t > .9;
+  if (S.orn.hang === "sraf") { const nt = ease(clamp((t - .9) / .1)); O.meshes.nut.position.y = 3 + (1 - nt) * 22; O.meshes.nut.rotation.y = (1 - nt) * Math.PI * 4; }
+  if (S.orn.hang === "nosac") { const nt = ease(clamp((t - .9) / .1)); O.meshes.nut.position.y = (1 - nt) * 18; }
+  $("#simLbl").textContent = t < .02 ? "Ravna mreža" : f < 1 ? "Oblikovanje" : t < .9 ? "Spajanje" : t < .99 && S.orn.hang === "sraf" ? "Zavrtanje" : t < .99 && S.orn.hang === "nosac" ? "Kapica" : "Spojeno";
+}
+function drawNetPreview(src) {
+  const c = $("#net"); if (!c) return;
+  const x = c.getContext("2d"), n = c.width;
+  x.clearRect(0, 0, n, n); x.fillStyle = COLORS[S.color].hex; x.fillRect(0, 0, n, n);
+  x.globalCompositeOperation = "destination-in"; x.drawImage(src, 0, 0, n, n); x.globalCompositeOperation = "source-over";
+}
+// own outline from an SVG file (first path / polygon / circle / rect)
+async function importSvg(file) {
+  const doc = new DOMParser().parseFromString(await file.text(), "image/svg+xml");
+  const el = doc.querySelector("path, polygon, polyline, circle, ellipse, rect");
+  if (!el) throw new Error("SVG has no shape element");
+  const ns = "http://www.w3.org/2000/svg", svg = document.createElementNS(ns, "svg");
+  svg.setAttribute("style", "position:absolute;width:0;height:0;visibility:hidden");
+  const node = document.importNode(el, true); svg.appendChild(node); document.body.appendChild(svg);
+  try {
+    const len = node.getTotalLength(), raw = [];
+    for (let i = 0; i < 300; i++) { const p = node.getPointAtLength(len * i / 300); raw.push([p.x, p.y]); }
+    const xs = raw.map((p) => p[0]), ys = raw.map((p) => p[1]);
+    const cx = (Math.min(...xs) + Math.max(...xs)) / 2, cy = (Math.min(...ys) + Math.max(...ys)) / 2;
+    const s = 2 / Math.max(Math.max(...xs) - Math.min(...xs), Math.max(...ys) - Math.min(...ys));
+    if (!isFinite(s)) throw new Error("SVG shape has zero size");
+    return raw.map(([x, y]) => [(x - cx) * s, -(y - cy) * s]);
+  } finally { svg.remove(); }
+}
+
+// ---------- solid net: alpha image -> smooth contours -> extruded 1,2 mm -> bent onto the shell ----------
+const NET_T = 1.2;
+// marching squares with subpixel edges; returns closed loops in pixel coords
+function traceContours(a, W, H, thr = 128) {
+  const v = (x, y) => (x < 0 || y < 0 || x >= W || y >= H) ? 0 : a[y * W + x];
+  const RW = W + 2, hId = (x, y) => ((y + 1) * RW + (x + 1)) * 2, vId = (x, y) => hId(x, y) + 1;
+  const pt = new Map(), nb = new Map();
+  const ep = (id, x0, y0, x1, y1, a0, a1) => { if (!pt.has(id)) { const t = (thr - a0) / (a1 - a0); pt.set(id, [x0 + (x1 - x0) * t + .5, y0 + (y1 - y0) * t + .5]); } return id; };
+  const link = (p, q) => { (nb.get(p) || nb.set(p, []).get(p)).push(q); (nb.get(q) || nb.set(q, []).get(q)).push(p); };
+  for (let y = -1; y < H; y++) for (let x = -1; x < W; x++) {
+    const A = v(x, y), B = v(x + 1, y), C = v(x + 1, y + 1), D = v(x, y + 1);
+    const idx = (A > thr ? 8 : 0) | (B > thr ? 4 : 0) | (C > thr ? 2 : 0) | (D > thr ? 1 : 0);
+    if (idx === 0 || idx === 15) continue;
+    const T = () => ep(hId(x, y), x, y, x + 1, y, A, B), R = () => ep(vId(x + 1, y), x + 1, y, x + 1, y + 1, B, C);
+    const Bo = () => ep(hId(x, y + 1), x, y + 1, x + 1, y + 1, D, C), L = () => ep(vId(x, y), x, y, x, y + 1, A, D);
+    const mid = (A + B + C + D) / 4 > thr;
+    switch (idx) {
+      case 1: case 14: link(L(), Bo()); break;
+      case 2: case 13: link(Bo(), R()); break;
+      case 3: case 12: link(L(), R()); break;
+      case 4: case 11: link(T(), R()); break;
+      case 6: case 9: link(T(), Bo()); break;
+      case 7: case 8: link(T(), L()); break;
+      case 5: if (mid) { link(T(), L()); link(Bo(), R()); } else { link(T(), R()); link(L(), Bo()); } break;
+      case 10: if (mid) { link(T(), R()); link(L(), Bo()); } else { link(T(), L()); link(Bo(), R()); } break;
+    }
+  }
+  const seen = new Set(), loops = [];
+  for (const start of nb.keys()) {
+    if (seen.has(start)) continue;
+    const loop = []; let prev = null, cur = start;
+    while (cur != null && !seen.has(cur)) { seen.add(cur); loop.push(pt.get(cur)); const n = nb.get(cur); const nx = n[0] !== prev ? n[0] : n[1]; prev = cur; cur = nx; }
+    if (loop.length > 3) loops.push(loop);
+  }
+  return loops;
+}
+function simplify(pts, tol) { // Douglas-Peucker on a closed loop
+  const keep = new Uint8Array(pts.length); keep[0] = keep[pts.length - 1] = 1;
+  const st = [[0, pts.length - 1]];
+  while (st.length) {
+    const [i, j] = st.pop(); let md = 0, mi = -1;
+    const [ax, ay] = pts[i], [bx, by] = pts[j], dx = bx - ax, dy = by - ay, L = Math.hypot(dx, dy) || 1;
+    for (let k = i + 1; k < j; k++) { const d = Math.abs((pts[k][0] - ax) * dy - (pts[k][1] - ay) * dx) / L; if (d > md) { md = d; mi = k; } }
+    if (md > tol) { keep[mi] = 1; st.push([i, mi], [mi, j]); }
+  }
+  return pts.filter((_, i) => keep[i]);
+}
+const loopArea = (p) => { let s = 0; for (let i = 0; i < p.length; i++) { const a = p[i], b = p[(i + 1) % p.length]; s += a[0] * b[1] - b[0] * a[1]; } return s / 2; };
+function inPoly(p, poly) { let c = false; for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) { const a = poly[i], b = poly[j]; if ((a[1] > p[1]) !== (b[1] > p[1]) && p[0] < (b[0] - a[0]) * (p[1] - a[1]) / (b[1] - a[1]) + a[0]) c = !c; } return c; }
+
+// builds the flat net as THREE shapes (mm, y up) from the alpha canvas
+function netShapes(cv, smm) {
+  const n = cv.width, data = cv.getContext("2d").getImageData(0, 0, n, n).data, a = new Uint8Array(n * n);
+  for (let i = 0; i < a.length; i++) a[i] = data[i * 4 + 3];
+  const simpLoop = (l) => { let k = 0, md = 0; l.forEach((p, i) => { const d = (p[0] - l[0][0]) ** 2 + (p[1] - l[0][1]) ** 2; if (d > md) { md = d; k = i; } });
+    return simplify(l.slice(0, k + 1), .45).slice(0, -1).concat(simplify(l.slice(k).concat([l[0]]), .45).slice(0, -1)); };
+  // straight runs get points every ~1,2 mm again, otherwise long edges cut through the shell as flat chords
+  const maxL = 1.2 * n / smm;
+  const dens = (l) => { const o = []; l.forEach((p, i) => { const q = l[(i + 1) % l.length], k = Math.ceil(Math.hypot(q[0] - p[0], q[1] - p[1]) / maxL); for (let j = 0; j < k; j++) o.push([p[0] + (q[0] - p[0]) * j / k, p[1] + (q[1] - p[1]) * j / k]); }); return o; };
+  const loops = traceContours(a, n, n).map((l) => dens(simpLoop(l))).filter((l) => l.length > 2 && Math.abs(loopArea(l)) > 1.5);
+  // solid or hole: look just inside the loop
+  const outers = [], holes = [];
+  for (const l of loops) {
+    const ar = loopArea(l), p0 = l[0], p1 = l[1], ex = p1[0] - p0[0], ey = p1[1] - p0[1], el = Math.hypot(ex, ey) || 1;
+    const s = ar > 0 ? 1 : -1, mx = (p0[0] + p1[0]) / 2 - ey / el * .9 * s, my = (p0[1] + p1[1]) / 2 + ex / el * .9 * s;
+    const inside = inPoly([mx, my], l) ? [mx, my] : [(p0[0] + p1[0]) / 2 + ey / el * .9 * s, (p0[1] + p1[1]) / 2 - ex / el * .9 * s];
+    const xi = Math.round(inside[0] - .5), yi = Math.round(inside[1] - .5);
+    (a[clamp(yi, 0, n - 1) * n + clamp(xi, 0, n - 1)] > 128 ? outers : holes).push(l);
+  }
+  const toV = (l) => l.map(([x, y]) => new THREE.Vector2((x / n - .5) * smm, (.5 - y / n) * smm));
+  const shapes = outers.sort((p, q) => Math.abs(loopArea(p)) - Math.abs(loopArea(q))).map((l) => ({ l, s: new THREE.Shape(toV(l)) }));
+  for (const h of holes) { const host = shapes.find((o) => inPoly(h[0], o.l)); if (host) host.s.holes.push(new THREE.Path(toV(h))); }
+  return shapes.map((o) => o.s);
+}
+// earcut leaves long slivers in thin ribs; split them so the bent net follows the shell instead of cutting chords
+function splitLong(src, maxL) {
+  const p = src.attributes.position.array, n = src.attributes.normal.array, P = [], Nn = [], st = [];
+  for (let i = 0; i < p.length; i += 9) st.push([[p[i], p[i + 1], p[i + 2]], [p[i + 3], p[i + 4], p[i + 5]], [p[i + 6], p[i + 7], p[i + 8]], [n[i], n[i + 1], n[i + 2]], [n[i + 3], n[i + 4], n[i + 5]], [n[i + 6], n[i + 7], n[i + 8]]]);
+  const L = (a, b) => Math.hypot(a[0] - b[0], a[1] - b[1], a[2] - b[2]), mid = (a, b) => [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2, (a[2] + b[2]) / 2];
+  while (st.length) {
+    const t = st.pop(), [a, b, c, na, nb, nc] = t, e = [L(a, b), L(b, c), L(c, a)], m = Math.max(...e);
+    if (m <= maxL) { P.push(...a, ...b, ...c); Nn.push(...na, ...nb, ...nc); continue; }
+    if (e[0] === m) { const d = mid(a, b), nd = mid(na, nb); st.push([a, d, c, na, nd, nc], [d, b, c, nd, nb, nc]); }
+    else if (e[1] === m) { const d = mid(b, c), nd = mid(nb, nc); st.push([a, b, d, na, nb, nd], [a, d, c, na, nd, nc]); }
+    else { const d = mid(c, a), nd = mid(nc, na); st.push([a, b, d, na, nb, nd], [d, b, c, nd, nb, nc]); }
+  }
+  src.dispose();
+  const g = new THREE.BufferGeometry();
+  g.setAttribute("position", new THREE.Float32BufferAttribute(P, 3)); g.setAttribute("normal", new THREE.Float32BufferAttribute(Nn, 3));
+  return g;
+}
+// net mesh with per-vertex data for bending (flat -> shell) and analytic normals
+function buildNetGeo(shapes, mapAt) {
+  const geo = splitLong(new THREE.ExtrudeGeometry(shapes, { depth: NET_T, bevelEnabled: false, curveSegments: 1 }), 1.5);
+  const p = geo.attributes.position, nrm = geo.attributes.normal, c = p.count;
+  const D = { fx: new Float32Array(c), fy: new Float32Array(c), lz: new Float32Array(c), dx: new Float32Array(c), dy: new Float32Array(c), bz: new Float32Array(c),
+    nx: new Float32Array(c), ny: new Float32Array(c), nz: new Float32Array(c), lnx: new Float32Array(c), lny: new Float32Array(c), lnz: new Float32Array(c) };
+  const cache = new Map();
+  for (let i = 0; i < c; i++) {
+    const x = p.getX(i), y = p.getY(i), k = x.toFixed(3) + "," + y.toFixed(3);
+    let m = cache.get(k);
+    if (!m) {
+      // one-sided differences at the rim, so points outside the outline do not bend the normal
+      const e = .3, a = mapAt(x, y), P = (q, ox, oy) => [ox + q[0], oy + q[1], q[2]];
+      const diff = (dxx, dyy) => {
+        const f = mapAt(x + dxx, y + dyy), b = mapAt(x - dxx, y - dyy), fi = f[3] > 0, bi = b[3] > 0;
+        const A = fi ? P(f, dxx, dyy) : P(a, 0, 0), B = bi ? P(b, -dxx, -dyy) : P(a, 0, 0);
+        if (!fi && !bi) return [dxx, dyy, 0];
+        return [A[0] - B[0], A[1] - B[1], A[2] - B[2]];
+      };
+      const tx = diff(e, 0), ty = diff(0, e);
+      let nx = tx[1] * ty[2] - tx[2] * ty[1], ny = tx[2] * ty[0] - tx[0] * ty[2], nz = tx[0] * ty[1] - tx[1] * ty[0]; const l = Math.hypot(nx, ny, nz) || 1;
+      m = [a[0], a[1], a[2], nx / l, ny / l, nz / l]; cache.set(k, m);
+    }
+    D.fx[i] = x; D.fy[i] = y; D.lz[i] = p.getZ(i); D.dx[i] = m[0]; D.dy[i] = m[1]; D.bz[i] = m[2]; D.nx[i] = m[3]; D.ny[i] = m[4]; D.nz[i] = m[5];
+    D.lnx[i] = nrm.getX(i); D.lny[i] = nrm.getY(i); D.lnz[i] = nrm.getZ(i);
+  }
+  geo.userData.D = D;
+  return geo;
+}
+function poseNet(geo, fe, off, sign) {
+  const D = geo.userData.D, p = geo.attributes.position, nr = geo.attributes.normal, c = p.count;
+  for (let i = 0; i < c; i++) {
+    const nx = D.nx[i] * fe, ny = D.ny[i] * fe, nz = 1 - fe + D.nz[i] * fe, l = Math.hypot(nx, ny, nz), Nx = nx / l, Ny = ny / l, Nz = nz / l, t = D.lz[i];
+    p.setXYZ(i, D.fx[i] + D.dx[i] * fe + Nx * t, D.fy[i] + D.dy[i] * fe + Ny * t, sign * (D.bz[i] * fe + off + Nz * t));
+    if (D.lnz[i] !== 0) nr.setXYZ(i, Nx * D.lnz[i], Ny * D.lnz[i], sign * Nz * D.lnz[i]);
+    else { const dp = D.lnx[i] * Nx + D.lny[i] * Ny, sx = D.lnx[i] - Nx * dp, sy = D.lny[i] - Ny * dp, sz = -Nz * dp, sl = Math.hypot(sx, sy, sz) || 1; nr.setXYZ(i, sx / sl, sy / sl, sign * sz / sl); }
+  }
+  p.needsUpdate = true; nr.needsUpdate = true; geo.computeBoundingSphere();
+}
+
+// ---------- simulation ----------
+let anim = null;
+$("#simT").addEventListener("input", (e) => { stopAnim(); S.orn.t = e.target.value / 1000; updateOrnPose(); });
+$("#play").addEventListener("click", () => {
+  if (anim) return stopAnim();
+  if (S.orn.t >= .999) S.orn.t = 0;
+  const t0 = performance.now() - S.orn.t * 3500;
+  $("#play use").setAttribute("href", "#t-player-pause");
+  anim = () => { S.orn.t = clamp((performance.now() - t0) / 3500); $("#simT").value = S.orn.t * 1000; updateOrnPose(); if (S.orn.t >= 1) stopAnim(); };
+});
+function stopAnim() { anim = null; $("#play use").setAttribute("href", "#t-player-play"); }
+
+// ---------- stats bar ----------
+function chip(label, val, bad) { return `<span class="st${bad ? " bad" : ""}"><i>${label}</i>${val}</span>`; }
+function stats() {
+  const bed = PRINTERS[S.printer].bed; let h = "";
+  const matChip = chip("Filament", MATS[S.mat].n);
+  if (S.mode === "hsw" && S.hsw.sub !== "elementi") {
+    const L = curLayout();
+    if (S.hsw.sub === "projekat") {
+      h = chip("Paneli", `${fmtNum(L.panels.length)} · ${fmtNum(L.types.length)} ${L.types.length === 1 ? "vrsta" : "vrste"}`) + chip("Ćelije", fmtNum(L.cellCount)) +
+        chip("Filament", `~${fmtNum(L.grams / 1000, 2)} kg`) + chip("Štampa", `~${fmtDur(L.grams / G_PER_H * 60)}`);
+    } else {
+      const b = L.panels[0].bb, fits = b.x1 - b.x0 + 10 <= bed && b.y1 - b.y0 + 10 <= bed;
+      h = chip("Mera", `${fmtNum(b.x1 - b.x0)} × ${fmtNum(b.y1 - b.y0)} mm`) + chip("Ćelije", fmtNum(L.cellCount)) +
+        chip("Filament", `~${fmtNum(L.grams)} g`) + chip("Štampa", `~${fmtDur(L.grams / G_PER_H * 60)}`) + chip("Ploča", fits ? PRINTERS[S.printer].name : "ne staje", !fits);
+    }
+  } else if (S.mode === "logo") {
+    const [lw, lh, lz] = LOGO.size, fits = lw + 10 <= bed && lh + 10 <= bed, nb = LOGO.bands.length, lg = S.logo;
+    h = chip("Mera", `${fmtNum(lw)} × ${fmtNum(lh)} × ${fmtNum(lz, 1)} mm`) + chip("Boje", fmtNum(nb)) + chip("Promene filamenta", fmtNum(Math.max(0, nb - 1))) +
+      chip("Filament", `~${fmtNum(LOGO.grams, 1)} g`) + chip("Štampa", `~${fmtDur(Math.max(10, LOGO.grams / 8 * 60 + (nb - 1) * (S.printer === "k2" ? 2 : 5)))}`) +
+      (lg.extra === "magnet" && lg.base < lg.magd + .6 ? chip("Osnova", "tanja od magneta", true) : chip("Ploča", fits ? PRINTERS[S.printer].name : "ne staje", !fits));
+  } else if (S.mode === "box") {
+    const b = S.box, g = boxGrams(), fits = b.w + 10 <= bed && b.d + 10 <= bed && b.h <= bed;
+    const iw = b.w - 2 * b.wall, id = b.d - 2 * b.wall, ih = b.h - b.floor;
+    h = chip("Mera", `${fmtNum(b.w)} × ${fmtNum(b.d)} × ${fmtNum(b.h)} mm`) + chip("Unutra", `${fmtNum(iw)} × ${fmtNum(id)} × ${fmtNum(ih)} mm`) +
+      chip("Zapremina", `${fmtNum(iw * id * ih / 1000)} ml`) + chip("Filament", `~${fmtNum(g)} g`) + chip("Štampa", `~${fmtDur(g / 12 * 60)}`) +
+      chip("Ploča", fits ? PRINTERS[S.printer].name : "ne staje", !fits);
+  } else if (S.mode === "hsw") {
+    const el = S.hsw.el;
+    h = chip("Element", EL[el].n) + EL[el].dims.map(([k, l]) => chip(l, fmtDim(el, k))).join("") + matChip;
+  } else {
+    const gNet = O.fill * O.area * 1.2 * MATS[S.mat].dens / 1000, fits = O.w + 10 <= bed && O.h + 10 <= bed;
+    h = chip("Mera", `${fmtNum(O.w)} × ${fmtNum(O.h)} × ${fmtNum(O.depth * 2)} mm`) + chip("Mreže", `2 × ~${fmtNum(gNet, 1)} g`) +
+      chip("Štampa", `~${fmtDur(gNet * 2 * 10)}`) + chip("Ploča", fits ? PRINTERS[S.printer].name : "ne staje", !fits);
+  }
+  $("#stats").innerHTML = h;
+  const pc = $("#printcard"); if (pc) pc.innerHTML = printCard();
+  const pl = $("#plist"); if (pl) pl.innerHTML = printList().map((it) =>
+    `<div class="pt${it.on ? " on" : ""}"><button class="pt-main"${it.sel != null ? ` data-type="${it.sel}"` : ""}><b>${it.letter}</b><span><strong>${it.label}</strong>${it.sub}</span><em>× ${fmtNum(it.count)}</em></button><button class="iconbtn dl" data-dl="${it.label}"><svg class="i"><use href="#t-download"/></svg></button></div>`).join("");
+}
+
+function printList() {
+  if (S.mode === "logo") {
+    const [lw, lh, lz] = LOGO.size, lg = S.logo, items = [{ letter: "L", label: "Logo", sub: `${fmtNum(lw)} × ${fmtNum(lh)} × ${fmtNum(lz, 1)} mm · ${LOGO.bands.length} boje`, count: 1 }];
+    if (lg.extra === "magnet") items[0].sub += ` · džep Ø${fmtNum(lg.mag + .2, 1)} × ${fmtNum(lg.magd + .2, 1)} mm`;
+    return items;
+  }
+  if (S.mode === "box") {
+    const b = S.box, items = [{ letter: "K", label: "Kutija", sub: `${fmtNum(b.w)} × ${fmtNum(b.d)} × ${fmtNum(b.h)} mm${b.divX + b.divY ? ` · pregrade ${b.divX + 1} × ${b.divY + 1}` : ""}`, count: 1 }];
+    if (b.lid === "klik") items.push({ letter: "P", label: "Poklopac (klik)", sub: `zub ${fmtNum(b.snap, 2)} mm · zazor ${fmtNum(b.gap, 2)} mm`, count: 1 });
+    if (b.lid === "nasadni" || b.lid === "klizni") items.push({ letter: "P", label: `Poklopac (${LIDS[b.lid].toLowerCase()})`, sub: `zazor ${fmtNum(b.gap, 2)} mm · hvataljka: ${GRIPS[b.grip].toLowerCase()}`, count: 1 });
+    if (b.lid === "sarke") items[0] = { letter: "K", label: "Kutija sa poklopcem na šarke", sub: `štampa u jednom komadu · zazor ${fmtNum(b.gap, 2)} mm`, count: 1 };
+    return items;
+  }
+  if (S.mode === "orn") {
+    const o = S.orn, dim = `${fmtNum(O.w)} × ${fmtNum(O.h)} mm`, items = [
+      { letter: "M", label: "Mreža", sub: o.shape === "kap" || o.shape === "mesec" || o.shape === "svoj" ? `prednja + zadnja · ${dim}` : dim, count: 2 },
+      { letter: "Č", label: "Čep prese", sub: `sa rukohvatom · ${fmtNum(O.depth + 23)} mm visine`, count: 1 },
+      { letter: "K", label: "Kalup prese", sub: `${fmtNum(O.w + 20)} × ${fmtNum(O.h + 20)} mm`, count: 1 }];
+    if (o.hang === "sraf") items.push({ letter: "Š", label: "Matica sa alkom", sub: "spaja obe polovine", count: 1 });
+    if (o.hang === "nosac") items.push({ letter: "N", label: "Nosač kapice v6", sub: "16 mm · ispuna 100%, bez podrške", count: 1 });
+    return items;
+  }
+  if (S.hsw.sub === "elementi") {
+    const el = S.hsw.el, sub = EL[el].dims.map(([k]) => fmtDim(el, k)).join(" · ");
+    return (EL[el].parts || [[EL[el].n, 1]]).map(([label, count], i) => ({ letter: String.fromCharCode(65 + i), label, sub, count }));
+  }
+  const L = curLayout();
+  if (S.hsw.sub === "panel") { const b = L.panels[0].bb; return [{ letter: "P", label: "Panel", sub: `${fmtNum(L.cellCount)} ćel. · ${fmtNum(b.x1 - b.x0)} × ${fmtNum(b.y1 - b.y0)} mm`, count: 1 }]; }
+  const cur = L.panels[S.hsw.sel] && L.panels[S.hsw.sel].type;
+  return L.types.map((t) => ({ letter: t.letter, label: `Panel ${t.letter}`, sub: `${fmtNum(t.cells)} ćel. · ${fmtNum(t.w)} × ${fmtNum(t.h)} mm`, count: t.count, sel: t.first, on: t.letter === cur }));
+}
+
+// ---------- sidebar ----------
+const seg = (key, opts, val) => `<div class="seg" data-k="${key}">${Object.entries(opts).map(([v, l]) => `<button data-v="${v}" class="${v === val ? "on" : ""}">${l}</button>`).join("")}</div>`;
+const swatches = () => `<div class="sw" data-k="color">${Object.entries(COLORS).map(([k, c]) => `<button data-v="${k}" class="${k === S.color ? "on" : ""}" style="background:${c.hex}"></button>`).join("")}</div>`;
+const slider = (key, label, min, max, step, val, unit) => `<div class="sec"><div class="lbl">${label}<b id="v-${key}">${fmtNum(val, step < 1 ? (step < .1 ? 2 : 1) : 0)}${unit ? " " + unit : ""}</b></div><input type="range" data-r="${key}" min="${min}" max="${max}" step="${step}" value="${val}"></div>`;
+const listSec = () => `<div class="sec"><div class="lbl">Za štampu</div><div class="plist" id="plist"></div></div>`;
+const filamentSec = () => `<details class="adv"${S.adv ? " open" : ""}><summary>Nameštanje<svg class="i"><use href="#t-chevron-down"/></svg></summary><div class="advin">
+  <div class="sec"><div class="lbl">Filament</div>${seg("mat", Object.fromEntries(Object.entries(MATS).map(([k, m]) => [k, m.n])), S.mat)}${swatches()}</div>
+  <div class="sec"><div class="lbl">Štampa</div><div id="printcard"></div></div></div></details>`;
+const patSec = (withSurf) => `<details class="adv" id="patbox"${S.pat.open ? " open" : ""}><summary>Šara na površinama<svg class="i"><use href="#t-chevron-down"/></svg></summary><div class="advin">
+  <div class="sec"><div class="lbl">Šara</div><div class="chips">${[["bez", "Bez šare"], ...Object.entries(PATTERNS).filter(([k]) => k !== "bez")].map(([k, l]) => `<button data-ppat="${k}" class="${k === S.pat.kind ? "on" : ""}">${l}</button>`).join("")}</div></div>
+  ${withSurf ? `<div class="sec"><div class="lbl">Površine</div><div class="chips edges">${[["zidovi", "Zidovi"], ["dno", "Dno"], ["poklopac", "Poklopac"], ["pregrade", "Pregrade"]].map(([k, l]) => `<button data-psurf="${k}" class="${S.pat.surf[k] ? "on" : ""}">${l}</button>`).join("")}</div></div>` : ""}
+  ${slider("p_cell", "Ćelija", 4, 24, .5, S.pat.cell, "mm")}${slider("p_rib", "Rebro", .8, 3, .1, S.pat.rib, "mm")}${slider("p_frame", "Pun okvir", 2, 12, .5, S.pat.frame, "mm")}</div></details>`;
+const exportBtn = () => `<button class="primary wide" id="export"><svg class="i"><use href="#t-download"/></svg>Izvezi sve</button>`;
+function shapeIcon(k) {
+  const pts = SHAPES[k](), d = pts.map(([x, y], i) => `${i ? "L" : "M"}${(12 + x * 10.5).toFixed(1)} ${(12 - y * 10.5).toFixed(1)}`).join("") + "Z";
+  return `<svg class="sh" viewBox="0 0 24 24"><path d="${d}"/></svg>`;
+}
+function renderSide() {
+  const h = S.hsw, o = S.orn; let html = "";
+  if (S.mode === "hsw") {
+    html += `<div class="sec">${seg("sub", { projekat: "Projekat", panel: "Panel", elementi: "Elementi" }, h.sub)}</div>`;
+    if (h.sub === "projekat") {
+      html += `<div class="sec"><div class="lbl">Zid</div><div class="pair">
+        <label class="num"><input type="number" id="zw" min="10" max="500" value="${h.w}"><span>cm</span></label>
+        <label class="num"><input type="number" id="zh" min="10" max="300" value="${h.h}"><span>cm</span></label></div></div>
+        <div class="sec"><div class="lbl">Ravna ivica</div>${seg("border", { da: "Da", ne: "Ne" }, h.border ? "da" : "ne")}</div>
+        <div class="sec"><div class="lbl">Alat</div>${seg("tool", { panel: "Panel", izrez: "Izrez" }, h.tool)}</div>
+        <div class="sec"><div class="lbl">3D prikaz</div>${seg("view", { panel: "Panel", zid: "Ceo zid" }, h.view)}</div>
+`;
+    } else if (h.sub === "panel") {
+      const mx = bedMax();
+      html += slider("pcol", "Kolone", 1, mx.pc, 1, h.pcol = clamp(h.pcol, 1, mx.pc), "") + slider("prow", "Redovi", 1, mx.pr, 1, h.prow = clamp(h.prow, 1, mx.pr), "") +
+        `<div class="sec"><div class="lbl">Ravna ivica</div><div class="chips edges">${[["t", "Gore"], ["b", "Dole"], ["l", "Levo"], ["r", "Desno"]].map(([k, l]) => `<button data-edge="${k}" class="${h.edges[k] ? "on" : ""}">${l}</button>`).join("")}</div></div>`;
+    } else {
+      html += `<div class="sec"><div class="lbl">Element</div><div class="chips els">${Object.entries(EL).map(([k, e]) => `<button data-el="${k}" class="${k === h.el ? "on" : ""}">${e.n}</button>`).join("")}</div></div>`;
+      html += EL[h.el].dims.map(([k, l, mn, mxv, , u = "mm"]) => slider("d_" + k, l, mn, mxv, 1, dimOf(h.el, k), u)).join("");
+      if (EL[h.el].pat) html += patSec(false);
+    }
+    html += listSec() + filamentSec() + `<div class="grow"></div>` + exportBtn();
+  } else if (S.mode === "logo") {
+    if (!LOGO.work) setLogoSource(sampleLogo(), "primer");
+    const lg = S.logo;
+    const rows = lg.order.map((j, i) => { const c = LOGO.clusters[j]; return `<div class="lrow"><span class="sw1" style="background:${c.hex}"></span><span>${i === 0 ? "Osnova · " : ""}${c.name}</span>
+      <input type="number" class="lt" data-i="${i}" min=".2" max="6" step=".2" value="${bandT(i)}"><button class="iconbtn" data-up="${i}"${i === 0 ? " disabled" : ""}><svg class="i"><use href="#t-arrow-up"/></svg></button><button class="iconbtn" data-down="${i}"${i === lg.order.length - 1 ? " disabled" : ""}><svg class="i"><use href="#t-arrow-down"/></svg></button></div>`; }).join("");
+    html += `<div class="sec"><button class="wide" id="logoIn"><svg class="i"><use href="#t-upload"/></svg>Uvezi logo</button><div class="lname">${LOGO.name}</div></div>
+      <div class="sec"><div class="lbl">Broj boja</div>${seg("lcolors", { "1": "1", "2": "2", "3": "3", "4": "4", "5": "5" }, String(lg.colors))}</div>
+      <div class="sec"><div class="lbl">Prepoznate boje</div><canvas id="logoprev" class="lprev"></canvas></div>
+      <div class="sec"><div class="lbl">Slojevi odozdo<b>mm</b></div><div class="lrows">${rows}</div></div>
+      <div class="sec"><div class="lbl">Dodatak</div>${seg("lextra", EXTRAS, lg.extra)}</div>
+      ${slider("l_width", "Širina logoa", 15, 200, 1, lg.width, "mm")}${slider("l_rim", "Ivica oko logoa", 0, 6, .5, lg.rim, "mm")}${slider("l_smooth", "Glatkoća ivica", 0, 3, .5, lg.smooth, "")}
+      ${lg.extra === "magnet" ? slider("l_mag", "Prečnik magneta", 5, 25, .5, lg.mag, "mm") + slider("l_magd", "Debljina magneta", 1, 5, .5, lg.magd, "mm") : ""}
+      ${listSec()}${filamentSec()}<div class="grow"></div>${exportBtn()}`;
+  } else if (S.mode === "box") {
+    const b = S.box;
+    html += `<div class="sec"><div class="lbl">Poklopac</div>${seg("lid", LIDS, b.lid)}</div>
+      ${b.lid !== "bez" ? `<div class="sec"><div class="lbl">Hvataljka</div>${seg("grip", GRIPS, b.grip)}</div><div class="sec"><div class="lbl">Prikaz</div>${seg("bview", { zatvoreno: "Zatvoreno", otvoreno: "Otvoreno" }, b.view)}</div>` : ""}
+      ${BOX_DIMS.filter(([k]) => (k !== "gap" || b.lid !== "bez") && (k !== "snap" || b.lid === "klik")).map(([k, l, mn, mx, st, u]) => slider("b_" + k, l, mn, mx, st, b[k], u)).join("")}
+      ${patSec(true)}${listSec()}${filamentSec()}<div class="grow"></div>${exportBtn()}`;
+  } else {
+    html += `<div class="sec"><div class="lbl">Oblik</div><div class="chips">${Object.keys(SHAPES).map((k) => `<button data-shape="${k}" class="${k === o.shape ? "on" : ""}">${k === "svoj" && !O.custom ? '<svg class="i sh-i"><use href="#t-upload"/></svg>' : shapeIcon(k)}${SHAPE_NAMES[k]}</button>`).join("")}</div>
+      ${o.shape === "zvezda" ? `<div class="sec"><div class="lbl">Krakovi</div>${seg("arms", { "5": "5", "6": "6", "8": "8" }, String(o.arms))}</div>` : ""}</div>
+      <div class="sec"><div class="lbl">Šara</div><div class="chips">${Object.entries(PATTERNS).map(([k, l]) => `<button data-pat="${k}" class="${k === o.pattern ? "on" : ""}">${l}</button>`).join("")}</div></div>
+      <div class="sec"><div class="lbl">Šara po kracima</div>${seg("radial", { da: "Da", ne: "Ne" }, o.radial ? "da" : "ne")}</div>
+      <div class="sec"><div class="lbl">Kačenje</div>${seg("hang", HANG, o.hang)}</div>
+      <div class="sec"><div class="lbl">Prikaz</div>${seg("oview", { ornament: "Ornament", presa: "Presa" }, o.view)}</div>
+      <div class="sec"><div class="lbl">Presa u simulaciji</div>${seg("press", { da: "Prikaži", ne: "Sakrij" }, o.press ? "da" : "ne")}</div>
+      ${slider("size", "Visina", 50, 140, 1, o.size, "mm")}${slider("cell", "Ćelija", 3, 18, .5, o.cell, "mm")}
+      ${slider("rib", "Rebro", .6, 2.4, .1, o.rib, "mm")}${slider("rim", "Ivica", .6, 4, .1, o.rim, "mm")}${slider("bulge", "Ispupčenost", 40, 100, 1, o.bulge, "%")}
+      ${listSec()}${filamentSec()}${exportBtn()}`;
+  }
+  $("#side").innerHTML = html;
+}
+
+let pending = null;
+function schedule(fn) { if (pending) return; pending = requestAnimationFrame(() => { pending = null; fn(); }); }
+function rebuild(reframe = true) {
+  try { rebuildInner(reframe); } catch (err) {
+    log("ERROR", `prikaz nije napravljen (modul ${S.mode})`, err);
+    vd.message("Prikaz nije uspeo. Detalji su u Dnevniku.");
+  }
+}
+function rebuildInner(reframe) {
+  const split = S.mode === "hsw" && S.hsw.sub !== "elementi";
+  $("#views").classList.toggle("split", split);
+  $("#sim").classList.toggle("on", S.mode === "orn" && S.orn.view === "ornament");
+  $("#netbox").classList.toggle("on", S.mode === "orn");
+  if (S.mode === "hsw") {
+    if (split) { const L = curLayout(); if (S.hsw.sel >= L.panels.length) S.hsw.sel = 0; renderPlan(); buildHSW(reframe); } else buildElement();
+  } else if (S.mode === "box") buildBox(reframe);
+  else if (S.mode === "logo") buildLogo(reframe);
+  else buildOrn(reframe);
+  if (S.mode !== "logo") $("#planbox").classList.remove("on");
+  if (S.mode !== "box") $("#presek").classList.remove("on");
+  stats();
+}
+function mark(b) { b.parentElement.querySelectorAll("button").forEach((x) => x.classList.toggle("on", x === b)); }
+
+$("#side").addEventListener("click", async (e) => {
+  const b = e.target.closest("button"); if (!b) return;
+  const segEl = b.closest("[data-k]");
+  if (segEl) {
+    const k = segEl.dataset.k, v = b.dataset.v;
+    segEl.querySelectorAll("button").forEach((x) => x.classList.toggle("on", x === b));
+    if (k === "color") { S.color = v; return rebuild(false); }
+    if (k === "mat") { S.mat = v; log("INFO", `filament: ${MATS[v].n}`); return stats(); }
+    if (k === "press") { S.orn.press = v === "da"; return updateOrnPose(); }
+    if (k === "arms") { S.orn.arms = +v; renderSide(); return rebuild(false); }
+    if (k === "radial") { S.orn.radial = v === "da"; return rebuild(false); }
+    if (k === "hang") { S.orn.hang = v; log("INFO", `kačenje: ${HANG[v]}`); return rebuild(false); }
+    if (k === "oview") { S.orn.view = v; stopAnim(); return rebuild(true); }
+    if (k === "lcolors") { S.logo.colors = +v; S.logo.t = {}; quantizeLogo(); renderSide(); return rebuild(false); }
+    if (k === "lextra") { S.logo.extra = v; renderSide(); return rebuild(false); }
+    if (k === "lid" || k === "grip" || k === "bview") { S.box[k === "bview" ? "view" : k] = v; if (k === "lid") { renderSide(); log("INFO", `poklopac: ${LIDS[v]}`); } return rebuild(false); }
+    if (k === "border") { S.hsw.border = v === "da"; S.hsw.removed.projekat.clear(); S.hsw.sel = 0; log("INFO", `ravna ivica: ${v}`); return rebuild(true); }
+    S.hsw[k] = v;
+    if (k === "sub") { renderSide(); return rebuild(); }
+    if (k === "view") return buildHSW(true);
+    return;
+  }
+  if (b.dataset.dl) {
+    log("INFO", `izvoz (mokap): ${b.dataset.dl}`);
+    return vd.message(`Izvoz: ${b.dataset.dl} (3MF sa podešavanjima štampe).\n\nU mokapu izvoz nije aktivan.`);
+  }
+  if (b.dataset.type) { S.hsw.sel = +b.dataset.type; renderPlan(); buildHSW(true); return stats(); }
+  if (b.dataset.edge) { const k = b.dataset.edge; S.hsw.edges[k] = !S.hsw.edges[k]; b.classList.toggle("on", S.hsw.edges[k]); return rebuild(false); }
+  if (b.id === "logoIn") return $("#logoFile").click();
+  if (b.dataset.up || b.dataset.down) {
+    const i = +(b.dataset.up ?? b.dataset.down), j = b.dataset.up ? i - 1 : i + 1, o = S.logo.order;
+    [o[i], o[j]] = [o[j], o[i]]; renderSide(); return rebuild(false);
+  }
+  if (b.dataset.ppat) { S.pat.kind = b.dataset.ppat; mark(b); log("INFO", `šara na površinama: ${PATTERNS[S.pat.kind]}`); return rebuild(false); }
+  if (b.dataset.psurf) { const k = b.dataset.psurf; S.pat.surf[k] = !S.pat.surf[k]; b.classList.toggle("on", S.pat.surf[k]); return rebuild(false); }
+  if (b.dataset.el) { S.hsw.el = b.dataset.el; renderSide(); return rebuild(); }
+  if (b.dataset.shape === "svoj") return $("#svgIn").click();
+  if (b.dataset.shape) { S.orn.shape = b.dataset.shape; renderSide(); return rebuild(); }
+  if (b.dataset.pat) { S.orn.pattern = b.dataset.pat; mark(b); return rebuild(false); }
+  if (b.id === "export") {
+    let what;
+    what = printList().map((it) => `${it.label} × ${it.count}`).join("\n");
+    log("INFO", `izvoz (mokap): ${what}`);
+    await vd.message(`Izvoz svega za Creality Print (3MF, sa podešavanjima štampe):\n${what}\n\nU mokapu izvoz nije aktivan.`);
+  }
+});
+$("#side").addEventListener("input", (e) => {
+  const t = e.target;
+  if (t.id === "zw" || t.id === "zh") {
+    const v = parseInt(t.value, 10); if (!(v >= 10)) return;
+    S.hsw[t.id === "zw" ? "w" : "h"] = Math.min(v, t.id === "zw" ? 500 : 300); S.hsw.removed.projekat.clear(); S.hsw.sel = 0;
+    log("INFO", `zid: ${S.hsw.w} × ${S.hsw.h} cm`);
+    return schedule(() => rebuild(true));
+  }
+  if (t.classList.contains("lt")) {
+    const i = +t.dataset.i, v = parseFloat(t.value); if (!(v > 0)) return;
+    if (i === 0) S.logo.base = v; else S.logo.t[i] = v;
+    clearTimeout(window._ornT); window._ornT = setTimeout(() => rebuild(false), 250); return;
+  }
+  if (t.dataset.r) {
+    const k = t.dataset.r, v = parseFloat(t.value), st = parseFloat(t.step);
+    let unit = "mm";
+    if (k.startsWith("d_")) { S.hsw.dims[S.hsw.el][k.slice(2)] = v; unit = dimUnit(S.hsw.el, k.slice(2)); }
+    else if (k === "pcol" || k === "prow") { S.hsw[k] = v; S.hsw.removed.panel.clear(); unit = ""; }
+    else if (k.startsWith("b_")) { S.box[k.slice(2)] = v; unit = BOX_DIMS.find((d) => d[0] === k.slice(2))[5]; if (k === "b_snap" || k === "b_gap") drawPresek(); }
+    else if (k.startsWith("p_")) S.pat[k.slice(2)] = v;
+    else if (k.startsWith("l_")) { S.logo[k.slice(2)] = v; if (k === "l_smooth") unit = ""; }
+    else { S.orn[k] = v; if (k === "bulge") unit = "%"; }
+    $("#v-" + k).textContent = `${fmtNum(v, st < 1 ? (st < .1 ? 2 : 1) : 0)}${unit ? " " + unit : ""}`;
+    if (S.mode === "orn" || S.mode === "box" || S.mode === "logo" || k.startsWith("p_")) { clearTimeout(window._ornT); window._ornT = setTimeout(() => rebuild(false), 160); }
+    else schedule(() => rebuild(k === "pcol" || k === "prow"));
+  }
+});
+document.querySelectorAll(".tabs button[data-mode]").forEach((b) => b.addEventListener("click", () => {
+  S.mode = b.dataset.mode; mark(b); stopAnim(); renderSide(); rebuild(); log("INFO", `modul: ${S.mode}`);
+}));
+$("#printer").addEventListener("click", (e) => {
+  const b = e.target.closest("button"); if (!b) return; S.printer = b.dataset.v; mark(b);
+  S.hsw.removed.projekat.clear(); S.hsw.sel = 0; if (S.mode === "hsw" && S.hsw.sub === "panel") renderSide();
+  rebuild(false); log("INFO", `štampač: ${PRINTERS[S.printer].name}`);
+});
+
+$("#side").addEventListener("toggle", (e) => { if (!e.target.classList || !e.target.classList.contains("adv")) return; if (e.target.id === "patbox") S.pat.open = e.target.open; else S.adv = e.target.open; }, true);
+$("#logoFile").addEventListener("change", async (e) => {
+  const f = e.target.files[0]; e.target.value = ""; if (!f) return;
+  try {
+    const url = URL.createObjectURL(f), im = new Image();
+    await new Promise((res, rej) => { im.onload = res; im.onerror = () => rej(new Error("image did not load")); im.src = url; });
+    const c = document.createElement("canvas"); c.width = im.naturalWidth || 512; c.height = im.naturalHeight || 512;
+    c.getContext("2d").drawImage(im, 0, 0, c.width, c.height); URL.revokeObjectURL(url);
+    S.logo.t = {}; setLogoSource(c, f.name); renderSide(); rebuild(true);
+  } catch (err) { log("ERROR", `logo nije učitan: ${f.name}`, err); vd.message("Ovaj fajl nije učitan kao slika. Detalji su u Dnevniku."); }
+});
+$("#svgIn").addEventListener("change", async (e) => {
+  const f = e.target.files[0]; e.target.value = ""; if (!f) return;
+  try { O.custom = await importSvg(f); S.orn.shape = "svoj"; log("INFO", `svoj oblik: ${f.name}`); renderSide(); rebuild(); }
+  catch (err) { log("ERROR", `SVG nije učitan: ${f.name}`, err); vd.message("Oblik iz ovog SVG fajla nije učitan. Detalji su u Dnevniku."); }
+});
+
+// ---------- Podešavanja (UI12, V1) ----------
+const fmtBytes = (b) => b < 1024 ? `${fmtNum(b)} B` : b < 1048576 ? `${fmtNum(b / 1024, 1)} KB` : `${fmtNum(b / 1048576, 1)} MB`;
+const esc = (t) => t.replace(/[&<>]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" })[c]);
+const SET = { tab: "opste", day: null, filter: "sve", older: "30" };
+function openSettings() {
+  const ov = document.createElement("div"); ov.className = "set-ov";
+  ov.innerHTML = `<div class="set-card" role="dialog" aria-modal="true">
+    <div class="set-head"><span></span><h2>Podešavanja</h2><button class="iconbtn" data-close><svg class="i"><use href="#t-x"/></svg></button></div>
+    <div class="set-body"><nav class="set-nav"><button data-tab="opste">Opšte</button><button data-tab="dnevnik">Dnevnik</button></nav><div class="set-pane"></div></div></div>`;
+  const close = () => { document.removeEventListener("keydown", onKey, true); ov.remove(); document.body.classList.remove("vd-lock"); };
+  const onKey = (e) => { if (e.key === "Escape" && !document.querySelector(".vd-overlay")) { e.preventDefault(); close(); } };
+  const pane = ov.querySelector(".set-pane");
+  const draw = () => {
+    ov.querySelectorAll("[data-tab]").forEach((b) => b.classList.toggle("on", b.dataset.tab === SET.tab));
+    if (SET.tab === "opste") {
+      pane.innerHTML = `<div class="set-row"><span>Tema</span>${seg("theme", { dark: "Tamna", light: "Svetla" }, document.documentElement.dataset.theme)}</div>
+        <div class="set-row"><span>Štampač</span>${seg("printer", { k1: "K1 Max", k2: "K2 Plus" }, S.printer)}</div>
+        <div class="set-row"><span>Verzija</span><span class="muted" style="text-align:right">Košnica 3D ${VERSION} · mokap</span></div>`;
+    } else {
+      const days = logDays(); if (!SET.day || !days.includes(SET.day)) SET.day = days[0];
+      const raw = (SET.day && store.get(LOG_PREFIX + SET.day)) || "";
+      const rows = [], lines = raw.split("\n").filter(Boolean); let keep = false;
+      for (const l of lines) {
+        const isHead = /^\d{4}-\d\d-\d\d /.test(l), lvl = isHead ? l.slice(20, 25).trim() : null;
+        if (isHead) keep = SET.filter === "sve" || lvl === "ERROR" || lvl === "WARN";
+        if (!keep) continue;
+        const cls = isHead ? (lvl === "ERROR" ? "e" : lvl === "WARN" ? "w" : "") : "e";
+        rows.push(`<div class="${cls}">${esc(l)}</div>`);
+      }
+      pane.innerHTML = `<div class="set-row"><span>Veličina dnevnika</span><span class="muted" style="text-align:right">${fmtBytes(logSize())} · ${fmtNum(days.length)} ${days.length === 1 ? "dan" : "dana"}</span></div>
+        <div class="days">${days.map((d) => `<button data-day="${d}" class="${d === SET.day ? "on" : ""}">${fmtDay(d)}</button>`).join("")}</div>
+        <div class="set-row"><span>Prikaz</span>${seg("filter", { sve: "Sve", greske: "Greške" }, SET.filter)}</div>
+        <div class="logbox">${rows.join("") || '<span class="muted">Prazno</span>'}</div>
+        <div class="set-row"><span>Obriši starije od</span><div style="display:grid;grid-template-columns:1fr auto;gap:8px">${seg("older", { "7": "7 d", "30": "30 d", "90": "90 d" }, SET.older)}<button class="danger" data-purge>Obriši</button></div></div>`;
+      const box = pane.querySelector(".logbox"); box.scrollTop = box.scrollHeight;
+    }
+  };
+  ov.addEventListener("mousedown", (e) => { if (e.target === ov) close(); });
+  ov.addEventListener("click", async (e) => {
+    const b = e.target.closest("button"); if (!b) return;
+    if (b.hasAttribute("data-close")) return close();
+    if (b.dataset.tab) { SET.tab = b.dataset.tab; return draw(); }
+    if (b.dataset.day) { SET.day = b.dataset.day; return draw(); }
+    if (b.hasAttribute("data-purge")) {
+      const lim = new Date(); lim.setDate(lim.getDate() - +SET.older); const cut = isoDay(lim);
+      const old = logDays().filter((d) => d < cut);
+      if (!old.length) return vd.message("Nema starijih dnevnika.");
+      if (!(await vd.confirm(`Obrisati ${fmtNum(old.length)} ${old.length === 1 ? "dan" : "dana"} dnevnika?`, { ok: "Obriši", danger: true }))) return;
+      old.forEach((d) => store.del(LOG_PREFIX + d)); log("INFO", `dnevnik: obrisano ${old.length} dana starijih od ${cut}`); return draw();
+    }
+    const sg = b.closest("[data-k]"); if (!sg) return;
+    const k = sg.dataset.k, v = b.dataset.v;
+    if (k === "theme") { document.documentElement.dataset.theme = v; store.set(APP + "_theme", v); log("INFO", `tema: ${v}`); if (S.mode === "hsw" && S.hsw.sub === "zid") renderPlan(); }
+    if (k === "printer") { document.querySelector(`#printer [data-v="${v}"]`).click(); }
+    if (k === "filter") SET.filter = v;
+    if (k === "older") SET.older = v;
+    draw();
+  });
+  document.addEventListener("keydown", onKey, true);
+  document.body.classList.add("vd-lock"); document.body.appendChild(ov); draw();
+}
+$("#settings").addEventListener("click", openSettings);
+
+renderSide(); rebuild();
+(function loop() { if (anim) anim(); placeCam(); renderer.render(scene, camera); requestAnimationFrame(loop); })();
+</script>
+</body>
+</html>
