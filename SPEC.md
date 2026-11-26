@@ -8,7 +8,7 @@ Pravljenje modela za 3D štampu u radionici Ožiljak bez CAD programa: biram vrs
 
 ## 1. Opšte
 - Prečica „Košnica 3D“ → app u sopstvenom prozoru, ikonica pored sata (Otvori/Ugasi).
-- Zaglavlje: režimi **HSW**, **Ornament**, **Kutija**, **Logo**; izbor štampača (K1/K2) menja granice ploče i plan boja.
+- Zaglavlje: režimi **HSW**, **Ornament**, **Kutija**, **Logo**, **Ramovi**; izbor štampača (K1/K2) menja granice ploče i plan boja.
 - Svaki režim: 3D prikaz (okretanje mišem), spisak delova za štampu sa preuzimanjem po delu i „Izvezi sve“, preporuke štampe po delu i materijalu (PLA, PETG, ASA, Silk) označene „polazno“, težina i procena.
 - Podešavanja (zupčanik): tema, štampač, dnevnik, verzija i ažuriranje.
 
@@ -36,9 +36,14 @@ Pravljenje modela za 3D štampu u radionici Ožiljak bez CAD programa: biram vrs
 - Plan boja: na kojoj visini K1 pauzira za ručnu promenu, odnosno K2 menja kroz CFS.
 - Napomena o dozvoli vlasnika za tuđi znak.
 
+## 6. Ramovi (od 0.10.0)
+- Kad izaberem format (9×13 … 20×30, A4, ručno) i položeno/uspravno → vidim HSW ram sa pločom za fotografiju, kačenjem gore i info ćelijom dole.
+- Kad je ram širi od ploče štampača → app ga sama seče na komade (cigle, lastin rep); kad je viši nego što staje → javlja da ne staje.
+- Kad kliknem Izvezi → u `data/izvoz/<naziv>_<datum>/` dobijem STL po delu, 3MF po ploči (crni i beli filament) spreman za Creality Print, izveštaj provere i nacrt; app otvara folder.
+
 ## Namerno ne radi
 - Ne čuva stanje projekta između pokretanja (otvoreno, UI16).
 
 ## Nije urađeno / nije provereno
-- **Izvoz 3MF** — dugmad još samo javljaju „U mokapu izvoz nije aktivan“. Plan: 3MF sa podešavanjima kroz `moduli/model3d/mf3.py`, provera `provera_3mf.py`, ime objekta = ime dela (Nadzor ga tako nalazi).
+- **Izvoz 3MF za HSW, Ornament, Kutiju i Logo** — dugmad još samo javljaju „U mokapu izvoz nije aktivan“. Plan: 3MF sa podešavanjima kroz `moduli/model3d/mf3.py`, provera `provera_3mf.py`, ime objekta = ime dela (Nadzor ga tako nalazi).
 - Mere HSW (otvor 20, korak 23,6, debljina 8) i svi zazori su polazni — potvrđuju se probnim komadom.
