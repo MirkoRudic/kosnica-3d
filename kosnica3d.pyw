@@ -122,6 +122,63 @@ def stop_running():
     log.warning("restart: old server still answers")
 
 
+# ---------- Ramovi (HSW ram iz komada) ----------
+IZVOZ = DATA / "izvoz"
+
+
+def _ram_iz(body):
+    from k3d import ramovi
+    f = lambda k, d, lo, hi: min(max(float(body.get(k) or d), lo), hi)
+    naziv = "".join(c if c.isalnum() or c in "-_" else "_" for c in str(body.get("naziv") or "hsw_ram"))[:40] or "hsw_ram"
+    return ramovi.Ram(sirina=f("sirina", 178, 40, 1500), visina=f("visina", 127, 40, 1500),
+                      uspravno=bool(body.get("uspravno")), stampac="k2" if body.get("stampac") == "k2" else "k1",
+                      kacenje="K1" if body.get("kacenje") == "K1" else "K2",
+                      info=body.get("info") if body.get("info") in ("levo", "desno", "nema") else "levo", naziv=naziv)
+
+
+def ram_proracun(body):
+    import base64
+    import numpy as np
+    r = _ram_iz(body)
+    delovi = []
+    for d in r.delovi:
+        me = d.m.to_mesh()
+        v = np.asarray(me.vert_properties[:, :3], dtype=np.float32)
+        i = np.asarray(me.tri_verts, dtype=np.uint32)
+        delovi.append({"ime": d.ime, "boja": d.boja, "v": base64.b64encode(v.tobytes()).decode(),
+                       "i": base64.b64encode(i.tobytes()).decode()})
+    return {"ok": True, "naziv": r.naziv, "sazetak": r.sazetak(), "delovi": delovi}
+
+
+def ram_izvoz(body):
+    r = _ram_iz(body)
+    gr = r.greska()
+    if gr:
+        return {"ok": False, "error": gr}
+    folder = IZVOZ / f"{r.naziv}_{time.strftime('%Y%m%d-%H%M%S')}"
+    from k3d import ramovi
+    rez = ramovi.izvezi(r, folder)
+    greske = [f"{ime}: {m}" for ime, n in rez["provera"].items() for lvl, m in n if lvl == "GREŠKA"]
+    proveri = [f"{ime}: {m}" for ime, n in rez["provera"].items() for lvl, m in n if lvl == "PROVERI"]
+    log.info("ramovi: izvoz %s, %d fajlova, %d grešaka", folder.name, len(rez["fajlovi"]), len(greske))
+    return {"ok": not greske, "folder": str(folder), "ime": folder.name, "fajlovi": rez["fajlovi"],
+            "greske": greske, "proveri": proveri, "nacrt_greska": rez.get("nacrt_greska"),
+            "error": "Provera 3MF je našla greške (detalji u dnevniku)." if greske else None}
+
+
+def otvori_folder(path):
+    p = Path(path).resolve()
+    if IZVOZ.resolve() not in p.parents or not p.is_dir():
+        return {"ok": False, "error": "Folder nije iz izvoza."}
+    if sys.platform == "win32":
+        os.startfile(str(p))  # noqa: S606 (lokalni folder izvoza)
+    elif sys.platform == "darwin":
+        subprocess.Popen(["open", str(p)])
+    else:
+        subprocess.Popen(["xdg-open", str(p)])
+    return {"ok": True}
+
+
 def make_server(shutdown):
     class H(SimpleHTTPRequestHandler):
         def __init__(self, *a, **k):
@@ -169,6 +226,17 @@ def make_server(shutdown):
                 r = update.apply(VERSION)
                 return self._json({"ok": r.get("ok"), "changed": r.get("changed"),
                                    "error": None if r.get("ok") else "Ažuriranje nije uspelo (detalji u dnevniku)."})
+            ram = {"/api/ramovi/proracun": ram_proracun, "/api/ramovi/izvoz": ram_izvoz,
+                   "/api/ramovi/otvori": lambda b: otvori_folder(b.get("folder") or "")}.get(self.path)
+            if ram:
+                try:
+                    return self._json(ram(body))
+                except ImportError as e:
+                    log.exception("ramovi: nedostaje biblioteka")
+                    return self._json({"ok": False, "error": f"Nedostaje biblioteka ({e.name}). Pokreni ažuriranje ili pip install -r requirements.txt."})
+                except Exception:
+                    log.exception("ramovi: %s", self.path)
+                    return self._json({"ok": False, "error": "Ram nije napravljen (detalji u dnevniku)."})
             self._json({"error": "not found"}, 404)
 
     return ThreadingHTTPServer(("127.0.0.1", PORT), H)
