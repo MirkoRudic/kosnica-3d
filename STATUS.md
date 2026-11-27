@@ -1,12 +1,13 @@
 # Košnica 3D — stanje (26.11.2026)
 
-Verzija **0.10.0**. Računar u radionici `desktop-fk7e7jt`, `C:\Users\zzroz\Desktop\VAJB\kosnica-3d`, port 8801, git klon ovog repoa, ažuriranje iz Podešavanja → Verzija.
+Verzija **0.10.1**. Računar u radionici `desktop-fk7e7jt`, `C:\Users\zzroz\Desktop\VAJB\kosnica-3d`, port 8801, git klon ovog repoa, ažuriranje iz Podešavanja → Verzija.
 Nastavak u novom četu: pročitaj `AGENTS.md`, `SPECIFICATION.md`, ovaj fajl; pravila `vajb-osnova/RULES.md` i `RULES_3D_PRINTING.md`.
 
 ## Poslednje urađeno
+- 27.11 (0.10.1): Ornament crta nosač kapice **v8** (kosa donja strana stepenika 45°, prorez 3,4 × 1) umesto v6. Ukupno 16 mm i stepenik Ø10,5 preuzeti iz v6 — pretpostavka, potvrditi prema `nosac_kukice_v8_FINAL.stl`.
 - 26.11 (0.10.0): režim **Ramovi** — HSW ram za fotografiju iz komada (tiple na obodu, potporne kolone, cigle kad je ram širi od ploče, ploča sa lastinim repom). Pravi izvoz: STL po delu, 3MF po ploči (crni/beli) na Mirkovim 3MF-ovima iz `k3d/osnova/`, `provera_3mf`, nacrt PNG+PDF u `data/izvoz/`.
 - 24.11: lokalna app (ranije artifact na claude.ai), ažuriranje iz app, ikonica pored sata.
-- Režimi HSW, Ornament (nosač kapice v6, presa), Kutija (klik poklopac sa presekom), Logo (slojevi boja, magnet).
+- Režimi HSW, Ornament (nosač kapice, presa), Kutija (klik poklopac sa presekom), Logo (slojevi boja, magnet).
 
 ## Odluke
 - Lokalna app kao Nadzor i Print (23.11); kasnije i na sajtu radionice (`sajt-radionice-koraci.md`).

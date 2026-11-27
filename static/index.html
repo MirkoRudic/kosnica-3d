@@ -435,7 +435,7 @@ svg.sh-i { width: 26px; height: 26px; }
 </script>
 <script>
 "use strict";
-const APP = "kosnica3d", VERSION = "0.10.0";
+const APP = "kosnica3d", VERSION = "0.10.1";
 // ---------- Dnevnik (L1, L3-L6): one entry per day, readable text lines; in the browser it lives in localStorage ----------
 const store = (() => { const mem = {}; return {
   get: (k) => { try { return localStorage.getItem(k); } catch { return mem[k] ?? null; } },
@@ -1356,10 +1356,11 @@ function buildOrn(reframe = true) {
     const loop = new THREE.Mesh(new THREE.TorusGeometry(3.2, 1.3, 16, 40), hm); loop.position.y = 9.5; hang.add(loop);
   }
   if (o.hang === "nosac") {
-    // nosač v6 (iz četa „3D - Ukras za jelku“): stub Ø7,5 8 mm u ornamentu, vrat Ø7,5 3 mm, stepenik na Ø10,5, konus 5 mm do Ø12, ravan vrh
-    const prof = [[0, -8], [3.75, -8], [3.75, 3], [5.25, 3], [6, 8], [0, 8]].map(([x, y]) => new THREE.Vector2(x, y));
+    // nosač v8 (vajb-osnova/models/ukrasi-za-jelku): stub Ø7,5 8 mm u ornamentu, vrat Ø7,5, donja strana stepenika kosa 45° do Ø10,5, konus 5 mm do Ø12, ravan vrh
+    // Ø12, konus 5, vrat Ø7,5, 45°, prorez 3,4 × 1 su iz STATUS-a modela; ukupno 16 i stepenik Ø10,5 su iz v6 (pretpostavka da su ostali isti)
+    const prof = [[0, -8], [3.75, -8], [3.75, 1.5], [5.25, 3], [6, 8], [0, 8]].map(([x, y]) => new THREE.Vector2(x, y));
     hang.add(new THREE.Mesh(new THREE.LatheGeometry(prof, 96), hm));
-    const slot = new THREE.Shape(); slot.absarc(-1.5, 0, .5, Math.PI / 2, Math.PI * 1.5); slot.absarc(1.5, 0, .5, -Math.PI / 2, Math.PI / 2);
+    const slot = new THREE.Shape(); slot.absarc(-1.2, 0, .5, Math.PI / 2, Math.PI * 1.5); slot.absarc(1.2, 0, .5, -Math.PI / 2, Math.PI / 2);
     const sl = new THREE.Mesh(new THREE.ShapeGeometry(slot, 16), new THREE.MeshBasicMaterial({ color: "#111" })); sl.rotation.x = -Math.PI / 2; sl.position.y = 8.02; hang.add(sl);
     // kupovna metalna kapica: unutrašnji Ø12, lim 0,5, visina 5,1 (6,3 sa zubićima), žičana kukica Ø0,6
     const metal = new THREE.MeshStandardMaterial({ color: "#e2cf93", metalness: .5, roughness: .3, side: THREE.DoubleSide });
@@ -1744,7 +1745,7 @@ function printList() {
       { letter: "Č", label: "Čep prese", sub: `sa rukohvatom · ${fmtNum(O.depth + 23)} mm visine`, count: 1 },
       { letter: "K", label: "Kalup prese", sub: `${fmtNum(O.w + 20)} × ${fmtNum(O.h + 20)} mm`, count: 1 }];
     if (o.hang === "sraf") items.push({ letter: "Š", label: "Matica sa alkom", sub: "spaja obe polovine", count: 1 });
-    if (o.hang === "nosac") items.push({ letter: "N", label: "Nosač kapice v6", sub: "16 mm · ispuna 100%, bez podrške", count: 1 });
+    if (o.hang === "nosac") items.push({ letter: "N", label: "Nosač kapice v8", sub: "16 mm · ispuna 100%, bez podrške", count: 1 });
     return items;
   }
   if (S.hsw.sub === "elementi") {

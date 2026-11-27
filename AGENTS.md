@@ -63,8 +63,8 @@ Ceo izbor je u objektu `S` u `index.html`: `S.mode` je `hsw`, `orn`, `box`, `log
    - Oblici (`SHAPE_NAMES`): kugla, jaje, kap, srce, zvezda (5/6/8 krakova), jelka, mesec, dijamant i svoj oblik (uvoz SVG).
    - Šare (`PATTERNS`): saće, pletivo, krugovi, trougao, romb, krljušt, voronoi, spirala, puna; može i radijalno.
    - Mreža se pravi kao slika: alfa → konture → ekstruzija 1,2 mm (`NET_T`) → savija se na ljusku. Dva dela, prednji i zadnji.
-   - Kačenje (`HANG`): kapica, **nosač kapice v6** ili šraf (matica sa alkom spaja obe polovine).
-     - Mere nosača kapice (trenutno v8) i šta nije radilo: `vajb-osnova/models/ukrasi-za-jelku/` (STATUS.md, ATTEMPTS.md). App još crta stari v6, koji je pao na probi pada sa 1 m.
+   - Kačenje (`HANG`): kapica, **nosač kapice v8** ili šraf (matica sa alkom spaja obe polovine).
+     - Mere i istorija nosača (v6 pukao na probi pada): `vajb-osnova/models/ukrasi-za-jelku/`. Ukupno 16 mm i stepenik Ø10,5 su preuzeti iz v6 (pretpostavka); potvrditi prema `nosac_kukice_v8_FINAL.stl`.
    - **Presa** (čep + kalup) za oblikovanje mreže.
    - Simulacija sklapanja: dugme Play.
 3. **Kutija** (`S.box`).
