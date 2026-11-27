@@ -1,4 +1,4 @@
-"""VAJB mf3 1.1 - read and change Creality Print / Orca style 3MF projects (PRAVILA_3D.md D1, D2).
+"""VAJB mf3 1.1 - read and change Creality Print / Orca style 3MF projects (RULES_3D_PRINTING.md D1, D2).
 
     from model3d import mf3
     p = mf3.open("ram_v10.3mf")

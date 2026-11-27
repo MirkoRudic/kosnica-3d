@@ -1,7 +1,7 @@
 # Košnica 3D — specifikacija
 
 Šta app radi iz ugla korisnika. Svaka izmena ponašanja prvo se upiše ovde, pa u kod.
-Oblik: **kad uradim X → desi se Y**. Tehnika u `CLAUDE.md`, gde smo stali u `STANJE.md`, pravila za modele `vajb-osnova/PRAVILA_3D.md`.
+Oblik: **kad uradim X → desi se Y**. Tehnika u `AGENTS.md`, gde smo stali u `STATUS.md`, pravila za modele `vajb-osnova/RULES_3D_PRINTING.md`.
 
 ## Svrha
 Pravljenje modela za 3D štampu u radionici Ožiljak bez CAD programa: biram vrstu projekta, menjam mere klizačima, vidim model uživo, dobijem fajl za Creality Print sa podešavanjima. Štampači K1 Max (300 mm) i K2 Plus (350 mm, CFS).

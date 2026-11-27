@@ -1,4 +1,4 @@
-"""VAJB provera_3mf 1.0 - check a slicer project before it goes to Mirko (PRAVILA_3D.md D2).
+"""VAJB provera_3mf 1.0 - check a slicer project before it goes to Mirko (RULES_3D_PRINTING.md D2).
 
     python provera_3mf.py ram_v11.3mf [--stampac K1|K2] [--cena 3200]
     -> list of GREŠKA / PROVERI / INFO; exit code 1 when there is a GREŠKA.

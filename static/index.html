@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Košnica 3D</title>
 <style>
-/* VAJB base.css 1.0 - PRAVILA.md UI1, UI4, UI8, UI12. Load before the app's own CSS. */
+/* VAJB base.css 1.0 - RULES.md UI1, UI4, UI8, UI12. Load before the app's own CSS. */
 
 :root, [data-theme="dark"] {
   --bg: #121316; --surface: #1a1c20; --border: #2a2d33; --text: #e8e9eb; --muted: #9a9ea6;
@@ -249,7 +249,7 @@ svg.sh-i { width: 26px; height: 26px; }
 
 <script src="three.min.js"></script>
 <script>
-// VAJB version.js 1.1 - "Verzija" u Podešavanjima + traka „Nova verzija“ (PRAVILA.md V1, V2, V3). Based on PDFactory.
+// VAJB version.js 1.1 - "Verzija" u Podešavanjima + traka „Nova verzija“ (RULES.md V1, V2, V3). Based on PDFactory.
 // Needs base.css + dialog.js. Server: GET /api/update (update.status / selfupdate.check), POST /api/update
 // (update.apply / selfupdate.apply), GET /health -> {pid, version}, GET /api/settings -> {version: "<App> X.Y.Z · hash"}.
 //
@@ -365,7 +365,7 @@ svg.sh-i { width: 26px; height: 26px; }
 
 </script>
 <script>
-// VAJB dialog.js 1.0 - replaces alert/confirm/prompt with the app's own dialog (PRAVILA.md UI4, UI5).
+// VAJB dialog.js 1.0 - replaces alert/confirm/prompt with the app's own dialog (RULES.md UI4, UI5).
 // Needs base.css. Usage:
 //   if (await vd.confirm("Obrisati projekat?", {ok: "Obriši", danger: true})) ...
 //   await vd.message("Sačuvano.")

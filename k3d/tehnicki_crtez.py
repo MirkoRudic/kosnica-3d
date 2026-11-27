@@ -1,4 +1,4 @@
-"""VAJB tehnicki_crtez 1.12 - skica/nacrt kao tehnicki crtez (PRAVILA.md R15).
+"""VAJB tehnicki_crtez 1.12 - skica/nacrt kao tehnicki crtez (RULES.md R15).
 
 Gornji red: spreda, sa strane, otpozadi (ista razmera, poravnati vrhovi i naslovi).
 Donji red: odozdo, izometrija, okvir sa delovima/napomenama/legendom dole desno.
