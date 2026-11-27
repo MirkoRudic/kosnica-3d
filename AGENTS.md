@@ -64,7 +64,7 @@ Ceo izbor je u objektu `S` u `index.html`: `S.mode` je `hsw`, `orn`, `box`, `log
    - Šare (`PATTERNS`): saće, pletivo, krugovi, trougao, romb, krljušt, voronoi, spirala, puna; može i radijalno.
    - Mreža se pravi kao slika: alfa → konture → ekstruzija 1,2 mm (`NET_T`) → savija se na ljusku. Dva dela, prednji i zadnji.
    - Kačenje (`HANG`): kapica, **nosač kapice v6** ili šraf (matica sa alkom spaja obe polovine).
-     - Nosač kapice v6 je usvojena mera, vidi projektni dokument `kosnica-3d-nosac-kapice.md`: ukupno 16 mm, vrh Ø12, prorez 4×1, 100 % ispune modifikatorom.
+     - Mere nosača kapice (trenutno v8) i šta nije radilo: `vajb-osnova/models/ukrasi-za-jelku/` (STATUS.md, ATTEMPTS.md). App još crta stari v6, koji je pao na probi pada sa 1 m.
    - **Presa** (čep + kalup) za oblikovanje mreže.
    - Simulacija sklapanja: dugme Play.
 3. **Kutija** (`S.box`).

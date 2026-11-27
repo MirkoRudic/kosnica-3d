@@ -21,7 +21,7 @@ Pravljenje modela za 3D štampu u radionici Ožiljak bez CAD programa: biram vrs
 ## 3. Ornament (ukras za jelku)
 - Biram oblik (kugla, jaje, kap, srce, zvezda, jelka, mesec, dijamant ili svoj SVG) i šaru (saće, pletivo, krugovi, voronoi, spirala…), debljinu rebra i ivice.
 - Štampa se ravna mreža, greje se i utiskuje **presom** (čep sa rukohvatom + kalup), pa se spoje dve polovine.
-- Kačenje: kapica, **nosač kapice v6** (usvojene mere, projektni dokument `kosnica-3d-nosac-kapice.md`) ili šraf.
+- Kačenje: kapica, **nosač kapice v6** (trenutne mere i istorija: `vajb-osnova/models/ukrasi-za-jelku/`) ili šraf.
 - Mreža za štampu u malom okviru dole desno; Play pokazuje oblikovanje i spajanje.
 
 ## 4. Kutija
